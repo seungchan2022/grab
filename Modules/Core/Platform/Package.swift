@@ -11,10 +11,12 @@ let package = Package(
       targets: ["Platform"]),
   ],
   dependencies: [
+    .package(path: "../../Core/Domain"),
   ],
   targets: [
     .target(
       name: "Platform",
       dependencies: [
+        "Domain",
       ]),
   ])
