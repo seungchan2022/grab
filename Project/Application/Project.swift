@@ -65,6 +65,9 @@ extension [String: Plist.Value] {
 extension [TargetDependency] {
   static var compositeValue: [TargetDependency] {
     [
+      .package(product: "Architecture", type: .runtime, condition: .none),
+      .package(product: "Domain", type: .runtime, condition: .none),
+      .package(product: "Platform", type: .runtime, condition: .none),
     ]
   }
 }
@@ -72,6 +75,9 @@ extension [TargetDependency] {
 extension [Package] {
   static var compositeValue: [Package] {
     [
+      .local(path: .relativeToRoot("Modules/Core/Architecture")),
+      .local(path: .relativeToRoot("Modules/Core/Domain")),
+      .local(path: .relativeToRoot("Modules/Core/Platform")),
     ]
   }
 }
