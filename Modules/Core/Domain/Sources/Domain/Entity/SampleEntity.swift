@@ -1,6 +1,6 @@
 import Foundation
 
-public struct SampleEntity: Codable, Sendable {
+public struct SampleEntity: Codable, Sendable, Equatable {
   public let name: String
 
   public init(name: String) {

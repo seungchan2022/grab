@@ -1,5 +1,6 @@
 import Architecture
 import ComposableArchitecture
+import Domain
 import Foundation
 
 // MARK: - SampleReducer
@@ -23,6 +24,10 @@ struct SampleReducer {
       case .onTapBack:
         sideEffect.routeToBack()
         return .none
+
+      case .throwError(let error):
+        sideEffect.useCaseGroup.toastViewModel.send(errorMessage: error.displayMessage)
+        return .none
       }
     }
   }
@@ -35,7 +40,7 @@ struct SampleReducer {
 
 extension SampleReducer {
   @ObservableState
-  struct State: Equatable, Identifiable, Sendable {
+  struct State: Equatable, Identifiable {
     let id: UUID
 
     init(id: UUID = UUID()) {
@@ -43,11 +48,13 @@ extension SampleReducer {
     }
   }
 
-  enum Action: Equatable, BindableAction, Sendable {
+  enum Action: Equatable, BindableAction {
     case binding(BindingAction<State>)
     case teardown
 
     case onTapBack
+
+    case throwError(CompositeErrorRepository)
   }
 
 }
