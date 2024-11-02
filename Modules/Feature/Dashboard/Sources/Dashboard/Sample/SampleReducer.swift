@@ -2,11 +2,12 @@ import Architecture
 import ComposableArchitecture
 import Foundation
 
-// MARK: - HomeReducer
+// MARK: - SampleReducer
 
 @Reducer
-struct HomeReducer {
-  let sideEffect: HomeSideEffect
+struct SampleReducer {
+
+  // MARK: Public
 
   public var body: some ReducerOf<Self> {
     BindingReducer()
@@ -19,15 +20,20 @@ struct HomeReducer {
         return .concatenate(
           CancelID.allCases.map { .cancel(pageID: state.id, id: $0) })
 
-      case .onTapNext:
-        sideEffect.routeToNext()
+      case .onTapBack:
+        sideEffect.routeToBack()
         return .none
       }
     }
   }
+
+  // MARK: Internal
+
+  let sideEffect: SampleSideEffect
+
 }
 
-extension HomeReducer {
+extension SampleReducer {
   @ObservableState
   struct State: Equatable, Identifiable, Sendable {
     let id: UUID
@@ -41,13 +47,14 @@ extension HomeReducer {
     case binding(BindingAction<State>)
     case teardown
 
-    case onTapNext
+    case onTapBack
   }
+
 }
 
-// MARK: HomeReducer.CancelID
+// MARK: SampleReducer.CancelID
 
-extension HomeReducer {
+extension SampleReducer {
   enum CancelID: Equatable, CaseIterable {
     case teardown
   }

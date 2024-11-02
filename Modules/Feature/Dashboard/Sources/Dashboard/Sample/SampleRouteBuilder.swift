@@ -2,21 +2,21 @@ import Architecture
 import Foundation
 import LinkNavigator
 
-struct HomeRouteBuilder<RootNavigator: RootNavigatorType> {
+struct SampleRouteBuilder<RootNavigator: RootNavigatorType> {
 
   @MainActor
   static func generate() -> RouteBuilderOf<RootNavigator> {
-    let matchPath = Link.Dashboard.Path.home.rawValue
+    let matchPath = Link.Dashboard.Path.sample.rawValue
 
     return .init(matchPath: matchPath) { navigator, _, diContainer -> RouteViewController? in
       guard let env: DashboardSideEffect = diContainer.resolve() else { return .none }
 
       return WrappingController(matchPath: matchPath) {
-        HomePage(
+        SamplePage(
           store: .init(
-            initialState: HomeReducer.State(),
+            initialState: SampleReducer.State(),
             reducer: {
-              HomeReducer(
+              SampleReducer(
                 sideEffect: .init(
                   useCaseGroup: env,
                   navigator: navigator))

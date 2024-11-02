@@ -1,3 +1,4 @@
+import Architecture
 import LinkNavigator
 import SwiftUI
 
@@ -10,7 +11,9 @@ struct AppMain: App {
     WindowGroup {
       LinkNavigationView(
         linkNavigator: appContainer.linkNavigator,
-        item: .init(path: "", items: .none))
+        item: .init(
+          path: Link.Dashboard.Path.home.rawValue,
+          items: .none))
         .ignoresSafeArea()
     }
   }
