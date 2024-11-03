@@ -1,4 +1,5 @@
 import Architecture
+import ComposableArchitecture
 import Domain
 import Foundation
 import LinkNavigator
@@ -7,7 +8,18 @@ import LinkNavigator
 
 struct HomeSideEffect {
   let useCaseGroup: DashboardSideEffect
+  let main: AnySchedulerOf<DispatchQueue>
   let navigator: RootNavigatorType
+
+  init(
+    useCaseGroup: DashboardSideEffect,
+    main: AnySchedulerOf<DispatchQueue> = .main,
+    navigator: RootNavigatorType)
+  {
+    self.useCaseGroup = useCaseGroup
+    self.main = main
+    self.navigator = navigator
+  }
 }
 
 extension HomeSideEffect {
