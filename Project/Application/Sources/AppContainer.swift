@@ -1,6 +1,6 @@
 import Architecture
 import Foundation
-import LinkNavigator
+@preconcurrency import LinkNavigator
 import Platform
 
 // MARK: - AppContainer
@@ -26,7 +26,7 @@ extension AppContainer {
   class func build() -> AppContainer {
     let sideEffect = AppSideEffect(
       toastViewModel: ToastViewModel(),
-      sampleUseCase: SampleUseCasePlatform())
+      newsUseCase: NewsUseCasePlatform())
 
     return .init(
       dependency: sideEffect,

@@ -11,6 +11,7 @@ let package = Package(
       targets: ["Platform"]),
   ],
   dependencies: [
+    .package(path: "../../Core/Architecture"),
     .package(path: "../../Core/Domain"),
     .package(
       url: "https://github.com/apple/swift-log.git",
@@ -23,6 +24,7 @@ let package = Package(
     .target(
       name: "Platform",
       dependencies: [
+        "Architecture",
         "Domain",
         "CombineExt",
         .product(name: "Logging", package: "swift-log"),

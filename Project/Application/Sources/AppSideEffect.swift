@@ -9,5 +9,5 @@ import Platform
 
 struct AppSideEffect: DependencyType, DashboardSideEffect {
   let toastViewModel: ToastViewActionType
-  let sampleUseCase: SampleUseCase
+  let newsUseCase: NewsUseCase
 }

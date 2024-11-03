@@ -31,7 +31,7 @@ extension FetchState {
 // MARK: FetchState.Data
 
 extension FetchState {
-  public struct Data<V: Equatable>: Equatable {
+  public struct Data<V: Equatable & Sendable>: Equatable, Sendable {
     public var isLoading = false
     public var value: V
 

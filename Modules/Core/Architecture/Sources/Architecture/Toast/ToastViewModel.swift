@@ -4,7 +4,7 @@ import Functor
 // MARK: - ToastViewModel
 
 @Observable
-public final class ToastViewModel {
+public final class ToastViewModel: @unchecked Sendable {
 
   // MARK: Lifecycle
 
@@ -33,9 +33,8 @@ public final class ToastViewModel {
 
 // MARK: ToastViewActionType
 
-extension ToastViewModel: @preconcurrency ToastViewActionType {
+extension ToastViewModel: ToastViewActionType {
 
-  @MainActor
   public func send(message: String) {
     DispatchQueue.main.async { [weak self] in
       guard let self else { return }
@@ -51,7 +50,6 @@ extension ToastViewModel: @preconcurrency ToastViewActionType {
     }
   }
 
-  @MainActor
   public func send(errorMessage: String) {
     DispatchQueue.main.async { [weak self] in
       guard let self else { return }

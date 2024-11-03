@@ -2,7 +2,7 @@ import Foundation
 
 // MARK: - ToastViewActionMock
 
-public class ToastViewActionMock {
+public class ToastViewActionMock: @unchecked Sendable {
 
   // MARK: Lifecycle
 
@@ -19,7 +19,7 @@ public class ToastViewActionMock {
 // MARK: ToastViewActionMock.Event
 
 extension ToastViewActionMock {
-  public struct Event: Equatable, Sendable {
+  public struct Event: Equatable {
     public var sendMessage: Int = .zero
     public var sendErrorMessage: Int = .zero
     public var clear: Int = .zero

@@ -15,19 +15,34 @@ extension HomePage { }
 
 extension HomePage: View {
   var body: some View {
-    VStack {
-      Spacer()
-      HStack {
-        Spacer()
-        Text("Home Page!")
+    ScrollView {
+      LazyVStack(spacing: 16) {
+        ForEach(store.itemList, id: \.url) { item in
+          VStack(alignment: .leading, spacing: 8) {
+            Text(item.title ?? "")
+              .font(.headline)
+              .foregroundColor(.primary)
 
-        Button(action: { store.send(.onTapNext) }) {
-          Text("Next Page")
+            Text(item.description ?? "")
+              .font(.subheadline)
+              .foregroundColor(.secondary)
+              .lineLimit(2)
+
+            Text(item.url)
+              .font(.caption)
+              .foregroundColor(.blue)
+          }
+          .frame(maxWidth: .infinity, alignment: .leading)
+          .padding()
+          .background(
+            RoundedRectangle(cornerRadius: 12)
+              .fill(Color(.systemGray6)))
         }
-
-        Spacer()
       }
-      Spacer()
+      .padding()
+    }
+    .onAppear {
+      store.send(.getItemWithAsync)
     }
   }
 }
