@@ -21,35 +21,17 @@ struct HomeReducer {
         return .concatenate(
           CancelID.allCases.map { .cancel(pageID: state.id, id: $0) })
 
-      case .getItemWithCombine:
-        state.fetchItemWithCombine.isLoading = true
+      case .getItem:
+        state.fetchItem.isLoading = true
         return sideEffect
-          .getItemWithCombine(.init())
-          .cancellable(pageID: state.id, id: CancelID.requestItemWithCombine, cancelInFlight: true)
+          .getItem(.init())
+          .cancellable(pageID: state.id, id: CancelID.requestItem, cancelInFlight: true)
 
-      case .fetchItemWithCombine(let result):
-        state.fetchItemWithCombine.isLoading = false
+      case .fetchItem(let result):
+        state.fetchItem.isLoading = false
         switch result {
         case .success(let item):
-          state.fetchItemWithCombine.value = item
-          state.itemList = state.itemList + item.itemList
-          return .none
-
-        case .failure(let error):
-          return .run { await $0(.throwError(error)) }
-        }
-
-      case .getItemWithAsync:
-        state.fetchItemWithAsync.isLoading = true
-        return sideEffect
-          .getItemWithAsync(.init())
-          .cancellable(pageID: state.id, id: CancelID.requestItemWithCombine, cancelInFlight: true)
-
-      case .fetchItemWithAsync(let result):
-        state.fetchItemWithAsync.isLoading = false
-        switch result {
-        case .success(let item):
-          state.fetchItemWithAsync.value = item
+          state.fetchItem.value = item
           state.itemList = state.itemList + item.itemList
           return .none
 
@@ -85,20 +67,15 @@ extension HomeReducer {
 
     var itemList: [NewsEntity.TopHeadlines.Item] = []
 
-    var fetchItemWithCombine: FetchState.Data<NewsEntity.TopHeadlines.Response?> = .init(isLoading: false, value: .none)
-
-    var fetchItemWithAsync: FetchState.Data<NewsEntity.TopHeadlines.Response?> = .init(isLoading: false, value: .none)
+    var fetchItem: FetchState.Data<NewsEntity.TopHeadlines.Response?> = .init(isLoading: false, value: .none)
   }
 
   enum Action: Equatable, BindableAction, Sendable {
     case binding(BindingAction<State>)
     case teardown
 
-    case getItemWithCombine
-    case fetchItemWithCombine(Result<NewsEntity.TopHeadlines.Response, CompositeErrorRepository>)
-
-    case getItemWithAsync
-    case fetchItemWithAsync(Result<NewsEntity.TopHeadlines.Response, CompositeErrorRepository>)
+    case getItem
+    case fetchItem(Result<NewsEntity.TopHeadlines.Response, CompositeErrorRepository>)
 
     case onTapNext
 
@@ -111,7 +88,6 @@ extension HomeReducer {
 extension HomeReducer {
   enum CancelID: Equatable, CaseIterable {
     case teardown
-    case requestItemWithCombine
-    case requestItemWithAsync
+    case requestItem
   }
 }

@@ -15,21 +15,7 @@ public struct NewsUseCasePlatform {
 // MARK: NewsUseCase
 
 extension NewsUseCasePlatform: NewsUseCase {
-  public var newsWithCombine: (NewsEntity.TopHeadlines.Request) -> AnyPublisher<
-    NewsEntity.TopHeadlines.Response,
-    CompositeErrorRepository
-  > {
-    {
-      Endpoint(
-        baseURL: baseURL,
-        pathList: [],
-        httpMethod: .get,
-        content: .queryItemPath($0))
-        .fetch(isDebug: true)
-    }
-  }
-
-  public var newsWithAsync: (NewsEntity.TopHeadlines.Request) async throws -> NewsEntity.TopHeadlines.Response {
+  public var news: (NewsEntity.TopHeadlines.Request) async throws -> NewsEntity.TopHeadlines.Response {
     { req in
       guard var urlComponents = URLComponents(string: baseURL) else {
         throw CompositeErrorRepository.invalidTypeCasting

@@ -8,16 +8,13 @@ import LinkNavigator
 
 struct SampleSideEffect {
   let useCaseGroup: DashboardSideEffect
-  let main: AnySchedulerOf<DispatchQueue>
   let navigator: RootNavigatorType
 
   init(
     useCaseGroup: DashboardSideEffect,
-    main: AnySchedulerOf<DispatchQueue> = .main,
     navigator: RootNavigatorType)
   {
     self.useCaseGroup = useCaseGroup
-    self.main = main
     self.navigator = navigator
   }
 }

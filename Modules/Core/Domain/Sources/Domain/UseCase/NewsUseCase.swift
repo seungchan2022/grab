@@ -1,11 +1,7 @@
-import Combine
+import Foundation
 
 public protocol NewsUseCase: Sendable {
-  var newsWithCombine: (NewsEntity.TopHeadlines.Request) -> AnyPublisher<
-    NewsEntity.TopHeadlines.Response,
-    CompositeErrorRepository
-  > { get }
 
-  var newsWithAsync: (NewsEntity.TopHeadlines.Request) async throws -> NewsEntity.TopHeadlines.Response { get }
+  var news: (NewsEntity.TopHeadlines.Request) async throws -> NewsEntity.TopHeadlines.Response { get }
 
 }

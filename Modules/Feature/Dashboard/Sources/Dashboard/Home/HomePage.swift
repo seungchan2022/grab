@@ -42,7 +42,7 @@ extension HomePage: View {
       .padding()
     }
     .onAppear {
-      store.send(.getItemWithAsync)
+      store.send(.getItem)
     }
   }
 }
