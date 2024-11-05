@@ -16,7 +16,7 @@ let package = Package(
       from: "1.15.2"),
     .package(
       url: "https://github.com/forXifLess/LinkNavigator.git",
-      from: "1.2.9"),
+      from: "1.3.0"),
   ],
   targets: [
     .target(
