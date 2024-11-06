@@ -1,5 +1,4 @@
 import Architecture
-import Combine
 import Domain
 import Foundation
 
@@ -7,71 +6,60 @@ extension Endpoint {
   func fetch<D: Decodable>(
     session: URLSession = .shared,
     isDebug: Bool = false,
-    forceIgnoreCache: Bool = false) -> AnyPublisher<D, CompositeErrorRepository>
+    forceIgnoreCache: Bool = false)
+    async throws -> D
   {
-    makeRequest()
-      .map { $0.apply(ignoreCache: forceIgnoreCache) }
-      .flatMap(session.fetchData)
-      .map {
-        if isDebug { Logger.debug(.init(stringLiteral: String(data: $0, encoding: .utf8) ?? "nil")) }
-        return $0
-      }
-      .decode(type: D.self, decoder: JSONDecoder())
-      .catch { Fail(error: $0.serialized()) }
-      .eraseToAnyPublisher()
+    let request = try await makeRequest()
+    let data = try await session.fetchData(request.apply(ignoreCache: forceIgnoreCache))
+
+    if isDebug {
+      Logger.debug(.init(stringLiteral: String(data: data, encoding: .utf8) ?? "nil"))
+    }
+
+    return try JSONDecoder().decode(D.self, from: data)
   }
 
-  func fetchData(session: URLSession = .shared) -> AnyPublisher<Data, CompositeErrorRepository> {
-    makeRequest()
-      .flatMap(session.fetchData)
-      .eraseToAnyPublisher()
+  func fetchData(session: URLSession = .shared) async throws -> Data {
+    let request = try await makeRequest()
+    return try await session.fetchData(request)
   }
 }
 
 extension URLSession {
-  fileprivate var fetchData: (URLRequest) -> AnyPublisher<Data, CompositeErrorRepository> {
-    {
-      self.dataTaskPublisher(for: $0)
-        .tryMap { data, response in
-          Logger.debug(.init(stringLiteral: response.url?.absoluteString ?? ""))
+  fileprivate func fetchData(_ request: URLRequest) async throws -> Data {
+    let (data, response) = try await self.data(for: request)
 
-          guard let urlResponse = response as? HTTPURLResponse
-          else { throw CompositeErrorRepository.invalidTypeCasting }
+    Logger.debug(.init(stringLiteral: response.url?.absoluteString ?? ""))
 
-          guard (200...299).contains(urlResponse.statusCode) else {
-            if urlResponse.statusCode == 401 {
-              throw CompositeErrorRepository.networkUnauthorized
-            }
-
-            if let remoteError = try? JSONDecoder().decode(RemoteError.self, from: data) {
-              throw CompositeErrorRepository.remoteError(remoteError)
-            }
-
-            throw CompositeErrorRepository.networkUnknown
-          }
-
-          return data
-        }
-        .catch { Fail(error: $0.serialized()) }
-        .eraseToAnyPublisher()
+    guard let urlResponse = response as? HTTPURLResponse else {
+      throw CompositeErrorRepository.invalidTypeCasting
     }
+
+    guard (200...299).contains(urlResponse.statusCode) else {
+      if urlResponse.statusCode == 401 {
+        throw CompositeErrorRepository.networkUnauthorized
+      }
+
+      if let remoteError = try? JSONDecoder().decode(RemoteError.self, from: data) {
+        throw CompositeErrorRepository.remoteError(remoteError)
+      }
+
+      throw CompositeErrorRepository.networkUnknown
+    }
+
+    return data
   }
 }
 
 extension Endpoint {
-  private var makeRequest: () -> AnyPublisher<URLRequest, CompositeErrorRepository> {
-    {
-      Future<URLRequest, CompositeErrorRepository> { promise in
-        guard let request else { return promise(.failure(.invalidTypeCasting)) }
-        return promise(.success(request))
-      }
-      .eraseToAnyPublisher()
-    }
+  private func makeRequest() async throws -> URLRequest {
+    guard let request else { throw CompositeErrorRepository.invalidTypeCasting }
+    return request
   }
 }
 
 extension Error {
-  fileprivate func serialized() -> CompositeErrorRepository {
+  private func serialized() -> CompositeErrorRepository {
     guard let error = self as? CompositeErrorRepository else {
       return CompositeErrorRepository.other(self)
     }
