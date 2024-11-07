@@ -39,10 +39,6 @@ struct HomeReducer {
           return .run { await $0(.throwError(error)) }
         }
 
-      case .onTapNext:
-        sideEffect.routeToNext()
-        return .none
-
       case .throwError(let error):
         sideEffect.useCaseGroup.toastViewModel.send(errorMessage: error.displayMessage)
         return .none
@@ -76,8 +72,6 @@ extension HomeReducer {
 
     case getItem
     case fetchItem(Result<NewsEntity.TopHeadlines.Response, CompositeErrorRepository>)
-
-    case onTapNext
 
     case throwError(CompositeErrorRepository)
   }

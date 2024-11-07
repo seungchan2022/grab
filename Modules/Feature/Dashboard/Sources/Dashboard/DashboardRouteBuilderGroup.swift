@@ -13,7 +13,7 @@ extension DashboardRouteBuilderGroup {
   public func release() -> [RouteBuilderOf<RootNavigator>] {
     [
       HomeRouteBuilder.generate(),
-      SampleRouteBuilder.generate(),
+      SearchRouteBuilder.generate(),
     ]
   }
 }

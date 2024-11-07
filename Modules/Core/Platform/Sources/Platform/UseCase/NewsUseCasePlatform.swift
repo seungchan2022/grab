@@ -7,7 +7,7 @@ import Foundation
 public struct NewsUseCasePlatform {
   let baseURL: String
 
-  public init(baseURL: String = "https://newsapi.org/v2/top-headlines") {
+  public init(baseURL: String = "https://newsapi.org/v2/") {
     self.baseURL = baseURL
   }
 }
@@ -19,7 +19,18 @@ extension NewsUseCasePlatform: NewsUseCase {
     {
       try await Endpoint(
         baseURL: baseURL,
-        pathList: [],
+        pathList: ["top-headlines"],
+        httpMethod: .get,
+        content: .queryItemPath($0))
+        .fetch(isDebug: true)
+    }
+  }
+
+  public var search: (NewsEntity.Search.Request) async throws -> NewsEntity.Search.Response {
+    {
+      try await Endpoint(
+        baseURL: baseURL,
+        pathList: ["everything"],
         httpMethod: .get,
         content: .queryItemPath($0))
         .fetch(isDebug: true)

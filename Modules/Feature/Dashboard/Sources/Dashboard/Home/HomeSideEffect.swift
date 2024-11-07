@@ -32,14 +32,4 @@ extension HomeSideEffect {
       }
     }
   }
-
-  var routeToNext: () -> Void {
-    {
-      navigator.next(
-        linkItem: .init(
-          path: Link.Dashboard.Path.sample.rawValue,
-          items: .none),
-        isAnimated: true)
-    }
-  }
 }
