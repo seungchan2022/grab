@@ -19,6 +19,9 @@ let package = Package(
     .package(
       url: "https://github.com/CombineCommunity/CombineExt.git",
       .upToNextMajor(from: "1.8.1")),
+    .package(
+      url: "https://github.com/firebase/firebase-ios-sdk.git",
+      .upToNextMajor(from: "11.4.0")),
   ],
   targets: [
     .target(
@@ -28,5 +31,6 @@ let package = Package(
         "Domain",
         "CombineExt",
         .product(name: "Logging", package: "swift-log"),
+        .product(name: "FirebaseAuth", package: "firebase-ios-sdk"),
       ]),
   ])

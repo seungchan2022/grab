@@ -3,4 +3,5 @@
 
 import CombineExt
 import Domain
+import FirebaseAuth
 import Logging
