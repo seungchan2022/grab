@@ -1,4 +1,6 @@
 import Architecture
+import ComposableArchitecture
+import Domain
 import LinkNavigator
 
 // MARK: - SignUpSideEffect
@@ -16,4 +18,18 @@ struct SignUpSideEffect {
   }
 }
 
-extension SignUpSideEffect { }
+extension SignUpSideEffect {
+  var signUp: (AuthEntity.Email.Request) -> Effect<SignUpReducer.Action> {
+    { req in
+      .run { send in
+        do {
+          try await useCaseGroup.authUseCase.signUpEmail(req)
+          await send(SignUpReducer.Action.fetchSignUp(.success(true)))
+
+        } catch {
+          await send(SignUpReducer.Action.fetchSignUp(.failure(.other(error))))
+        }
+      }
+    }
+  }
+}

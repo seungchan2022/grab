@@ -29,6 +29,8 @@ struct SignUpReducer {
     var isShowPassword = false
     var isShowConfirmPassword = false
 
+    var fetchSignUp: FetchState.Data<Bool?> = .init(isLoading: false, value: .none)
+
     init(id: UUID = UUID()) {
       self.id = id
     }
@@ -63,10 +65,21 @@ struct SignUpReducer {
           CancelID.allCases.map { .cancel(pageID: state.id, id: $0) })
 
       case .onTapSignUp:
-        return .none
+        state.fetchSignUp.isLoading = true
+        return sideEffect
+          .signUp(.init(email: state.emailText, password: state.passwordText))
+          .cancellable(pageID: state.id, id: CancelID.requestSignUp, cancelInFlight: true)
 
       case .fetchSignUp(let result):
-        return .none
+        state.fetchSignUp.isLoading = false
+        switch result {
+        case .success:
+          sideEffect.useCaseGroup.toastViewModel.send(message: "성공")
+          return .none
+
+        case .failure(let error):
+          return .run { await $0(.throwError(error)) }
+        }
 
       case .routeToSignIn:
         return .none

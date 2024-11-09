@@ -10,4 +10,5 @@ import Platform
 struct AppSideEffect: DependencyType, DashboardSideEffect {
   let toastViewModel: ToastViewActionType
   let newsUseCase: NewsUseCase
+  let authUseCase: AuthUseCase
 }
