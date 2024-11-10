@@ -15,7 +15,27 @@ extension AuthUseCasePlatform: AuthUseCase {
   public var signUpEmail: (AuthEntity.Email.Request) async throws -> Void {
     { req in
       do {
-        _ = try await Auth.auth().createUser(withEmail: req.email, password: req.password)
+        try await Auth.auth().createUser(withEmail: req.email, password: req.password)
+      } catch {
+        throw CompositeErrorRepository.other(error)
+      }
+    }
+  }
+
+  public var signInEmail: (AuthEntity.Email.Request) async throws -> Void {
+    { req in
+      do {
+        try await Auth.auth().signIn(withEmail: req.email, password: req.password)
+      } catch {
+        throw CompositeErrorRepository.other(error)
+      }
+    }
+  }
+
+  public var signOut: () async throws -> Void {
+    {
+      do {
+        try Auth.auth().signOut()
       } catch {
         throw CompositeErrorRepository.other(error)
       }

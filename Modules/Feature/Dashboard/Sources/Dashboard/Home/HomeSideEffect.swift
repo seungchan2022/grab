@@ -31,4 +31,25 @@ extension HomeSideEffect {
       }
     }
   }
+
+  var signOut: () -> Effect<HomeReducer.Action> {
+    {
+      .run { send in
+        do {
+          try await useCaseGroup.authUseCase.signOut()
+          await send(HomeReducer.Action.fetchSignOut(.success(true)))
+        } catch {
+          await send(HomeReducer.Action.fetchSignOut(.failure(.other(error))))
+        }
+      }
+    }
+  }
+
+  var routeToSignIn: () -> Void {
+    {
+      navigator.replace(
+        linkItem: .init(path: Link.Dashboard.Path.signIn.rawValue, items: .none),
+        isAnimated: false)
+    }
+  }
 }

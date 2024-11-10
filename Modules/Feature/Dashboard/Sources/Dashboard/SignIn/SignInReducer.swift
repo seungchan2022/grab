@@ -27,6 +27,8 @@ struct SignInReducer {
 
     var isShowResetPassword = false
 
+    var fetchSignIn: FetchState.Data<Bool?> = .init(isLoading: false, value: .none)
+
     init(id: UUID = UUID()) {
       self.id = id
     }
@@ -43,6 +45,7 @@ struct SignInReducer {
     case fetchResetPassword(Result<Bool, CompositeErrorRepository>)
 
     case routeToSignUp
+    case routeToHome
 
     case throwError(CompositeErrorRepository)
   }
@@ -66,19 +69,34 @@ struct SignInReducer {
           CancelID.allCases.map { .cancel(pageID: state.id, id: $0) })
 
       case .onTapSignIn:
-        return .none
+        state.fetchSignIn.isLoading = true
+        return sideEffect
+          .signIn(.init(email: state.emailText, password: state.passwordText))
+          .cancellable(pageID: state.id, id: CancelID.requestSignIn, cancelInFlight: true)
 
       case .onTapResetPassword:
         return .none
 
       case .fetchSignIn(let result):
-        return .none
+        state.fetchSignIn.isLoading = false
+        switch result {
+        case .success:
+          sideEffect.routeToHome()
+          return .none
+
+        case .failure(let error):
+          return .run { await $0(.throwError(error)) }
+        }
 
       case .fetchResetPassword(let result):
         return .none
 
       case .routeToSignUp:
         sideEffect.routeToSignUp()
+        return .none
+
+      case .routeToHome:
+        sideEffect.routeToHome()
         return .none
 
       case .throwError(let error):

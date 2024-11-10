@@ -32,4 +32,10 @@ extension SignUpSideEffect {
       }
     }
   }
+
+  var routeToBack: () -> Void {
+    {
+      navigator.back(isAnimated: true)
+    }
+  }
 }

@@ -21,6 +21,23 @@ struct HomeReducer {
         return .concatenate(
           CancelID.allCases.map { .cancel(pageID: state.id, id: $0) })
 
+      case .onTapSignOut:
+        state.fetchSignOut.isLoading = true
+        return sideEffect
+          .signOut()
+          .cancellable(pageID: state.id, id: CancelID.requestSignOut, cancelInFlight: true)
+
+      case .fetchSignOut(let result):
+        switch result {
+        case .success:
+          sideEffect.useCaseGroup.toastViewModel.send(message: "로그아웃 되었습니다!")
+          sideEffect.routeToSignIn()
+          return .none
+
+        case .failure(let error):
+          return .run { await $0(.throwError(error)) }
+        }
+
       case .getItem:
         state.fetchItem.isLoading = true
         return sideEffect
@@ -64,11 +81,16 @@ extension HomeReducer {
     var itemList: [NewsEntity.TopHeadlines.Item] = []
 
     var fetchItem: FetchState.Data<NewsEntity.TopHeadlines.Response?> = .init(isLoading: false, value: .none)
+
+    var fetchSignOut: FetchState.Data<Bool?> = .init(isLoading: false, value: .none)
   }
 
   enum Action: Equatable, BindableAction, Sendable {
     case binding(BindingAction<State>)
     case teardown
+
+    case onTapSignOut
+    case fetchSignOut(Result<Bool, CompositeErrorRepository>)
 
     case getItem
     case fetchItem(Result<NewsEntity.TopHeadlines.Response, CompositeErrorRepository>)
@@ -83,5 +105,6 @@ extension HomeReducer {
   enum CancelID: Equatable, CaseIterable {
     case teardown
     case requestItem
+    case requestSignOut
   }
 }

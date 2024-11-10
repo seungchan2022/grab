@@ -43,7 +43,7 @@ struct SignUpReducer {
     case onTapSignUp
     case fetchSignUp(Result<Bool, CompositeErrorRepository>)
 
-    case routeToSignIn
+    case routeToBack
 
     case throwError(CompositeErrorRepository)
   }
@@ -75,13 +75,15 @@ struct SignUpReducer {
         switch result {
         case .success:
           sideEffect.useCaseGroup.toastViewModel.send(message: "성공")
+          sideEffect.routeToBack()
           return .none
 
         case .failure(let error):
           return .run { await $0(.throwError(error)) }
         }
 
-      case .routeToSignIn:
+      case .routeToBack:
+        sideEffect.routeToBack()
         return .none
 
       case .throwError(let error):
