@@ -14,5 +14,6 @@ extension Link.Dashboard {
     case search
     case signIn
     case signUp
+    case me
   }
 }

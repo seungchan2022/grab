@@ -74,7 +74,7 @@ struct SearchReducer {
 
 extension SearchReducer {
   @ObservableState
-  struct State: Equatable, Identifiable {
+  struct State: Equatable, Identifiable, Sendable {
     let id: UUID
 
     var query = ""
@@ -89,7 +89,7 @@ extension SearchReducer {
     }
   }
 
-  enum Action: Equatable, BindableAction {
+  enum Action: Equatable, BindableAction, Sendable {
     case binding(BindingAction<State>)
     case teardown
 
