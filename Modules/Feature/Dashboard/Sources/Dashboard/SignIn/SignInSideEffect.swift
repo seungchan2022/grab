@@ -43,7 +43,7 @@ extension SignInSideEffect {
   var routeToHome: () -> Void {
     {
       navigator.next(
-        linkItem: .init(path: Link.Dashboard.Path.home.rawValue, items: .none),
+        linkItem: .init(path: Link.Dashboard.Path.me.rawValue, items: .none),
         isAnimated: true)
     }
   }

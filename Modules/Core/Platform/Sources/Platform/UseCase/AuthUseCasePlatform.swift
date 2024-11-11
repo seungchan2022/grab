@@ -41,4 +41,21 @@ extension AuthUseCasePlatform: AuthUseCase {
       }
     }
   }
+
+  public var me: () async -> AuthEntity.Me.Response? {
+    {
+      guard let me = Auth.auth().currentUser else { return .none }
+      return me.serialized()
+    }
+  }
+}
+
+extension User {
+  fileprivate func serialized() -> AuthEntity.Me.Response {
+    .init(
+      uid: uid,
+      userName: displayName,
+      email: email,
+      photoURL: photoURL?.absoluteString)
+  }
 }

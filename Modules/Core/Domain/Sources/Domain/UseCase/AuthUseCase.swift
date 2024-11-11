@@ -6,4 +6,6 @@ public protocol AuthUseCase: Sendable {
   var signInEmail: (AuthEntity.Email.Request) async throws -> Void { get }
 
   var signOut: () async throws -> Void { get }
+
+  var me: () async -> AuthEntity.Me.Response? { get }
 }

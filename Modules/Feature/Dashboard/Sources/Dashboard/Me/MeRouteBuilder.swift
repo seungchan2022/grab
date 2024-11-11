@@ -1,7 +1,9 @@
 import Architecture
+import Foundation
 import LinkNavigator
 
 struct MeRouteBuilder<RootNavigator: RootNavigatorType> {
+
   @MainActor
   static func generate() -> RouteBuilderOf<RootNavigator> {
     let matchPath = Link.Dashboard.Path.me.rawValue
