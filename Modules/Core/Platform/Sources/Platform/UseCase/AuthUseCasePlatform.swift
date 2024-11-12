@@ -60,6 +60,22 @@ extension AuthUseCasePlatform: AuthUseCase {
       }
     }
   }
+
+  public var deleteUser: (String) async throws -> Void {
+    { currPassword in
+
+      guard let me = Auth.auth().currentUser else { return }
+
+      let credential = EmailAuthProvider.credential(withEmail: me.email ?? "", password: currPassword)
+
+      do {
+        try await me.reauthenticate(with: credential)
+        try await me.delete()
+      } catch {
+        throw CompositeErrorRepository.other(error)
+      }
+    }
+  }
 }
 
 extension User {

@@ -10,4 +10,6 @@ public protocol AuthUseCase: Sendable {
   var me: () async -> AuthEntity.Me.Response? { get }
 
   var resetPassword: (String) async throws -> Void { get }
+
+  var deleteUser: (String) async throws -> Void { get }
 }

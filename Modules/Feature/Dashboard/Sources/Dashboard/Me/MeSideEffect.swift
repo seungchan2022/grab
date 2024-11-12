@@ -41,6 +41,19 @@ extension MeSideEffect {
     }
   }
 
+  var deleteUser: (String) -> Effect<MeReducer.Action> {
+    { currPassword in
+      .run { send in
+        do {
+          try await useCaseGroup.authUseCase.deleteUser(currPassword)
+          await send(MeReducer.Action.fetchDeleteUser(.success(true)))
+        } catch {
+          await send(MeReducer.Action.fetchDeleteUser(.failure(.other(error))))
+        }
+      }
+    }
+  }
+
   var routeToSignIn: () -> Void {
     {
       navigator.replace(

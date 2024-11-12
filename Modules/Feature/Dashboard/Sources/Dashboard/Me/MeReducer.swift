@@ -37,7 +37,10 @@ struct MeReducer {
         return .none
 
       case .onTapDeleteUser:
-        return .none
+        state.fetchDeleteUser.isLoading = true
+        return sideEffect
+          .deleteUser(state.passwordText)
+          .cancellable(pageID: state.id, id: CancelID.requestDeleteUser, cancelInFlight: true)
 
       case .deleteUserInfo:
         return .none
@@ -70,7 +73,16 @@ struct MeReducer {
         return .none
 
       case .fetchDeleteUser(let result):
-        return .none
+        state.fetchDeleteUser.isLoading = false
+        switch result {
+        case .success:
+          sideEffect.useCaseGroup.toastViewModel.send(message: "계정이 탈퇴되었습니다!")
+          sideEffect.routeToSignIn()
+          return .none
+
+        case .failure(let error):
+          return .run { await $0(.throwError(error)) }
+        }
 
       case .fetchDeleteUserInfo(let result):
         return .none
