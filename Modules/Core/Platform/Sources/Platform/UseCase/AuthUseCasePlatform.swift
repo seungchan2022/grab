@@ -93,6 +93,20 @@ extension AuthUseCasePlatform: AuthUseCase {
       }
     }
   }
+
+  public var updateUserName: (String) async throws -> Void {
+    { newName in
+      guard let me = Auth.auth().currentUser else { return }
+
+      do {
+        let changeRequest = me.createProfileChangeRequest()
+        changeRequest.displayName = newName
+        try await changeRequest.commitChanges()
+      } catch {
+        throw CompositeErrorRepository.other(error)
+      }
+    }
+  }
 }
 
 extension User {

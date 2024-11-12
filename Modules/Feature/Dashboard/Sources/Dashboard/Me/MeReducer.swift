@@ -34,7 +34,10 @@ struct MeReducer {
           .cancellable(pageID: state.id, id: CancelID.requestSignOut, cancelInFlight: true)
 
       case .onTapUpdateUserName:
-        return .none
+        state.fetchUpdateUserName.isLoading = true
+        return sideEffect
+          .updateUserName(state.updateUserName)
+          .cancellable(pageID: state.id, id: CancelID.requestUpdateUserName, cancelInFlight: true)
 
       case .onTapDeleteUser:
         state.fetchDeleteUser.isLoading = true
@@ -70,7 +73,15 @@ struct MeReducer {
         }
 
       case .fetchUpdateUserName(let result):
-        return .none
+        state.fetchUpdateUserName.isLoading = false
+        switch result {
+        case .success:
+          sideEffect.useCaseGroup.toastViewModel.send(message: "유점 이름 변경")
+          return .run { await $0(.getUser) }
+
+        case .failure(let error):
+          return .run { await $0(.throwError(error)) }
+        }
 
       case .fetchDeleteUser(let result):
         state.fetchDeleteUser.isLoading = false

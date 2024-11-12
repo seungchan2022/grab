@@ -14,4 +14,6 @@ public protocol AuthUseCase: Sendable {
   var deleteUser: (String) async throws -> Void { get }
 
   var updatePassword: (String, String) async throws -> Void { get }
+
+  var updateUserName: (String) async throws -> Void { get }
 }

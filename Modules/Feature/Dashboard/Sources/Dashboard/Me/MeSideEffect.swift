@@ -54,6 +54,19 @@ extension MeSideEffect {
     }
   }
 
+  var updateUserName: (String) -> Effect<MeReducer.Action> {
+    { newName in
+      .run { send in
+        do {
+          try await useCaseGroup.authUseCase.updateUserName(newName)
+          await send(MeReducer.Action.fetchUpdateUserName(.success(true)))
+        } catch {
+          await send(MeReducer.Action.fetchUpdateUserName(.failure(.other(error))))
+        }
+      }
+    }
+  }
+
   var routeToSignIn: () -> Void {
     {
       navigator.replace(
