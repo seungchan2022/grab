@@ -61,4 +61,13 @@ extension MeSideEffect {
         isAnimated: false)
     }
   }
+
+  var routeToUpdatePassword: () -> Void {
+    {
+      navigator.fullSheet(
+        linkItem: .init(path: Link.Dashboard.Path.updatePassword.rawValue, items: .none),
+        isAnimated: true,
+        prefersLargeTitles: .none)
+    }
+  }
 }

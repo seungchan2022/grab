@@ -76,6 +76,23 @@ extension AuthUseCasePlatform: AuthUseCase {
       }
     }
   }
+
+  public var updatePassword: (String, String) async throws -> Void {
+    { currPassword, newPassword in
+
+      guard let me = Auth.auth().currentUser else { return }
+
+      let credential = EmailAuthProvider.credential(withEmail: me.email ?? "", password: currPassword)
+
+      do {
+        try await me.reauthenticate(with: credential)
+        try await me.updatePassword(to: newPassword)
+
+      } catch {
+        throw CompositeErrorRepository.other(error)
+      }
+    }
+  }
 }
 
 extension User {

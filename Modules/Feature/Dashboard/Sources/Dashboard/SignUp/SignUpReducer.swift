@@ -3,57 +3,14 @@ import ComposableArchitecture
 import Domain
 import Foundation
 
+// MARK: - SignUpReducer
+
 @Reducer
 struct SignUpReducer {
 
-  // MARK: Lifecycle
+  // MARK: Public
 
-  init(sideEffect: SignUpSideEffect) {
-    self.sideEffect = sideEffect
-  }
-
-  // MARK: Internal
-
-  @ObservableState
-  struct State: Equatable, Identifiable {
-    let id: UUID
-
-    var emailText = ""
-    var passwordText = ""
-    var confirmPasswordText = ""
-
-    var isValidEmail = true
-    var isValidPassword = true
-    var isValidConfirmPassword = true
-
-    var isShowPassword = false
-    var isShowConfirmPassword = false
-
-    var fetchSignUp: FetchState.Data<Bool?> = .init(isLoading: false, value: .none)
-
-    init(id: UUID = UUID()) {
-      self.id = id
-    }
-  }
-
-  enum Action: BindableAction, Equatable {
-    case binding(BindingAction<State>)
-    case teardown
-
-    case onTapSignUp
-    case fetchSignUp(Result<Bool, CompositeErrorRepository>)
-
-    case routeToBack
-
-    case throwError(CompositeErrorRepository)
-  }
-
-  enum CancelID: Equatable, CaseIterable {
-    case teardown
-    case requestSignUp
-  }
-
-  var body: some Reducer<State, Action> {
+  public var body: some Reducer<State, Action> {
     BindingReducer()
     Reduce { state, action in
       switch action {
@@ -93,7 +50,53 @@ struct SignUpReducer {
     }
   }
 
-  // MARK: Private
+  // MARK: Internal
 
-  private let sideEffect: SignUpSideEffect
+  let sideEffect: SignUpSideEffect
+}
+
+extension SignUpReducer {
+
+  @ObservableState
+  struct State: Equatable, Identifiable, Sendable {
+    let id: UUID
+
+    var emailText = ""
+    var passwordText = ""
+    var confirmPasswordText = ""
+
+    var isValidEmail = true
+    var isValidPassword = true
+    var isValidConfirmPassword = true
+
+    var isShowPassword = false
+    var isShowConfirmPassword = false
+
+    var fetchSignUp: FetchState.Data<Bool?> = .init(isLoading: false, value: .none)
+
+    init(id: UUID = UUID()) {
+      self.id = id
+    }
+  }
+
+  enum Action: BindableAction, Equatable, Sendable {
+    case binding(BindingAction<State>)
+    case teardown
+
+    case onTapSignUp
+    case fetchSignUp(Result<Bool, CompositeErrorRepository>)
+
+    case routeToBack
+
+    case throwError(CompositeErrorRepository)
+  }
+}
+
+// MARK: SignUpReducer.CancelID
+
+extension SignUpReducer {
+  enum CancelID: Equatable, CaseIterable {
+    case teardown
+    case requestSignUp
+  }
 }

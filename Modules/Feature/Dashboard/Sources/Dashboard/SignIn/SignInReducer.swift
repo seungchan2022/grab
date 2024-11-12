@@ -3,62 +3,14 @@ import ComposableArchitecture
 import Domain
 import Foundation
 
+// MARK: - SignInReducer
+
 @Reducer
 struct SignInReducer {
 
-  // MARK: Lifecycle
+  // MARK: Public
 
-  init(sideEffect: SignInSideEffect) {
-    self.sideEffect = sideEffect
-  }
-
-  // MARK: Internal
-
-  @ObservableState
-  struct State: Equatable, Identifiable {
-    let id: UUID
-
-    var emailText = ""
-    var passwordText = ""
-
-    var resetEmailText = ""
-
-    var isShowPassword = false
-
-    var isShowResetPassword = false
-
-    var fetchSignIn: FetchState.Data<Bool?> = .init(isLoading: false, value: .none)
-    var fetchResetPassword: FetchState.Data<Bool?> = .init(isLoading: false, value: .none)
-
-    init(id: UUID = UUID()) {
-      self.id = id
-    }
-  }
-
-  enum Action: BindableAction, Equatable {
-    case binding(BindingAction<State>)
-    case teardown
-
-    case onTapSignIn
-    case onTapResetPassword
-
-    case fetchSignIn(Result<Bool, CompositeErrorRepository>)
-    case fetchResetPassword(Result<Bool, CompositeErrorRepository>)
-
-    case routeToSignUp
-    case routeToHome
-
-    case throwError(CompositeErrorRepository)
-  }
-
-  enum CancelID: Equatable, CaseIterable {
-    case teardown
-    case requestSignIn
-    case requestResetPassword
-    case requestGoogleSignIn
-  }
-
-  var body: some Reducer<State, Action> {
+  public var body: some Reducer<State, Action> {
     BindingReducer()
     Reduce { state, action in
       switch action {
@@ -118,7 +70,58 @@ struct SignInReducer {
     }
   }
 
-  // MARK: Private
+  // MARK: Internal
 
-  private let sideEffect: SignInSideEffect
+  let sideEffect: SignInSideEffect
+}
+
+extension SignInReducer {
+
+  @ObservableState
+  struct State: Equatable, Identifiable, Sendable {
+    let id: UUID
+
+    var emailText = ""
+    var passwordText = ""
+
+    var resetEmailText = ""
+
+    var isShowPassword = false
+
+    var isShowResetPassword = false
+
+    var fetchSignIn: FetchState.Data<Bool?> = .init(isLoading: false, value: .none)
+    var fetchResetPassword: FetchState.Data<Bool?> = .init(isLoading: false, value: .none)
+
+    init(id: UUID = UUID()) {
+      self.id = id
+    }
+  }
+
+  enum Action: BindableAction, Equatable, Sendable {
+    case binding(BindingAction<State>)
+    case teardown
+
+    case onTapSignIn
+    case onTapResetPassword
+
+    case fetchSignIn(Result<Bool, CompositeErrorRepository>)
+    case fetchResetPassword(Result<Bool, CompositeErrorRepository>)
+
+    case routeToSignUp
+    case routeToHome
+
+    case throwError(CompositeErrorRepository)
+  }
+}
+
+// MARK: SignInReducer.CancelID
+
+extension SignInReducer {
+  enum CancelID: Equatable, CaseIterable {
+    case teardown
+    case requestSignIn
+    case requestResetPassword
+    case requestGoogleSignIn
+  }
 }

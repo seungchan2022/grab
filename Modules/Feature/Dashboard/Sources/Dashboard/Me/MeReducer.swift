@@ -91,6 +91,7 @@ struct MeReducer {
         return .none
 
       case .routeToUpdatePassword:
+        sideEffect.routeToUpdatePassword()
         return .none
 
       case .routeToSignIn:
