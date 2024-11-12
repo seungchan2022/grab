@@ -28,6 +28,7 @@ struct SignInReducer {
     var isShowResetPassword = false
 
     var fetchSignIn: FetchState.Data<Bool?> = .init(isLoading: false, value: .none)
+    var fetchResetPassword: FetchState.Data<Bool?> = .init(isLoading: false, value: .none)
 
     init(id: UUID = UUID()) {
       self.id = id
@@ -75,7 +76,10 @@ struct SignInReducer {
           .cancellable(pageID: state.id, id: CancelID.requestSignIn, cancelInFlight: true)
 
       case .onTapResetPassword:
-        return .none
+        state.fetchResetPassword.isLoading = true
+        return sideEffect
+          .resetPassword(state.resetEmailText)
+          .cancellable(pageID: state.id, id: CancelID.requestResetPassword, cancelInFlight: true)
 
       case .fetchSignIn(let result):
         state.fetchSignIn.isLoading = false
@@ -89,7 +93,15 @@ struct SignInReducer {
         }
 
       case .fetchResetPassword(let result):
-        return .none
+        state.fetchResetPassword.isLoading = false
+        switch result {
+        case .success:
+          sideEffect.useCaseGroup.toastViewModel.send(message: "재설정 링크가 발송되었습니다.")
+          return .none
+
+        case .failure(let error):
+          return .run { await $0(.throwError(error)) }
+        }
 
       case .routeToSignUp:
         sideEffect.routeToSignUp()

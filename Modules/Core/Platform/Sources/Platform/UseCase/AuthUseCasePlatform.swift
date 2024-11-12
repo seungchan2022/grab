@@ -48,6 +48,18 @@ extension AuthUseCasePlatform: AuthUseCase {
       return me.serialized()
     }
   }
+
+  public var resetPassword: (String) async throws -> Void {
+    { email in
+      do {
+        Auth.auth().languageCode = "ko"
+
+        try await Auth.auth().sendPasswordReset(withEmail: email)
+      } catch {
+        throw CompositeErrorRepository.other(error)
+      }
+    }
+  }
 }
 
 extension User {
