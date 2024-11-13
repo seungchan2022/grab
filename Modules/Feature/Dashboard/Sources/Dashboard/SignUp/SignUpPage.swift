@@ -38,7 +38,10 @@ extension SignUpPage {
 
 extension SignUpPage: View {
   var body: some View {
-    ScrollView {
+    DesignSystemNavigation(
+      barItem: .init(),
+      largeTitle: "Sign Up")
+    {
       VStack(spacing: 32) {
         TextFieldComponent(
           viewState: .init(),

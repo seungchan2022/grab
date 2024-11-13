@@ -1,4 +1,5 @@
 import ComposableArchitecture
+import DesignSystem
 import SwiftUI
 
 // MARK: - SignInFocus
@@ -31,7 +32,10 @@ extension SignInPage {
 
 extension SignInPage: View {
   var body: some View {
-    ScrollView {
+    DesignSystemNavigation(
+      barItem: .init(),
+      largeTitle: "Sign In")
+    {
       VStack(spacing: 32) {
         TextFieldComponent(
           viewState: .init(),

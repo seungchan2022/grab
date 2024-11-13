@@ -1,4 +1,5 @@
 import ComposableArchitecture
+import DesignSystem
 import SwiftUI
 
 // MARK: - MePage
@@ -13,24 +14,29 @@ extension MePage { }
 
 extension MePage: View {
   var body: some View {
-    ScrollView {
-      VStack {
-        ItemComponent(
-          viewState: .init(user: store.user),
-          nameTapAction: {
-            store.updateUserName = ""
-            store.isShowUpdateUserNameAlert = true
-          },
-          passwordTapAction: {
-            store.send(.routeToUpdatePassword)
-          },
-          signOutTapAction: {
-            store.send(.onTapSignOut)
-          },
-          deleteTapAction: {
-            store.passwordText = ""
-            store.isShowDeleteUserAlert = true
-          })
+    VStack {
+      DesignSystemNavigation(
+        barItem: .init(),
+        largeTitle: "Me")
+      {
+        VStack {
+          ItemComponent(
+            viewState: .init(user: store.user),
+            nameTapAction: {
+              store.updateUserName = ""
+              store.isShowUpdateUserNameAlert = true
+            },
+            passwordTapAction: {
+              store.send(.routeToUpdatePassword)
+            },
+            signOutTapAction: {
+              store.send(.onTapSignOut)
+            },
+            deleteTapAction: {
+              store.passwordText = ""
+              store.isShowDeleteUserAlert = true
+            })
+        }
       }
     }
     .alert(

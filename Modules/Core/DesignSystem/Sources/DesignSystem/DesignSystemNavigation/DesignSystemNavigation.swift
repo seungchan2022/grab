@@ -37,21 +37,21 @@ extension DesignSystemNavigation: View {
       if let barItem {
         barItem
           .overlay(alignment: .bottom) {
-            if isShowDivider == true {
-              Divider()
-            } else {
-              EmptyView()
-            }
-          }
-          .overlay(alignment: .center) {
-            if showInlineTitle, let largeTitle {
-              VStack {
-                Text(largeTitle)
-                  .font(.headline)
-                  .foregroundStyle(.black)
-                  .transition(.opacity)
-                  .animation(.easeInOut, value: showInlineTitle)
+            VStack(spacing: .zero) {
+              if showInlineTitle, let largeTitle {
+                VStack(spacing: .zero) {
+                  Text(largeTitle)
+                    .font(.title3)
+                    .foregroundStyle(.black)
+                    .transition(.opacity)
+                    .animation(.easeInOut, value: showInlineTitle)
+                    .padding(.bottom, 6)
 
+                  Divider()
+                }
+              }
+
+              if isShowDivider == true {
                 Divider()
               }
             }
@@ -76,7 +76,6 @@ extension DesignSystemNavigation: View {
             .multilineTextAlignment(.leading)
             .padding(.horizontal, 16)
             .frame(maxWidth: .infinity, alignment: .leading)
-//            .padding(.top, titleTopMargin)
         }
         content
           .padding(.top, 8)

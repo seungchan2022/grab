@@ -77,16 +77,12 @@ extension DesignSystemNavigationBar: View {
               .clipShape(Circle())
             }
           }
-        } else {
-          EmptyView()
         }
       }
       .overlay(alignment: .center) {
         if let title {
           Text(title)
-            .foregroundStyle(.black)
-        } else {
-          EmptyView()
+            .font(.title3)
         }
       }
       .overlay(alignment: .trailing) {
