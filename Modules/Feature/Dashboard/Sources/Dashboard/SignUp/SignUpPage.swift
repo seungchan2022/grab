@@ -29,9 +29,15 @@ extension SignUpPage {
   }
 
   @MainActor
+  private var isLoading: Bool {
+    store.fetchSignUp.isLoading
+  }
+
+  @MainActor
   private func isValidConfirmPassword(text: String) -> Bool {
     store.passwordText == text
   }
+
 }
 
 // MARK: View
@@ -39,7 +45,7 @@ extension SignUpPage {
 extension SignUpPage: View {
   var body: some View {
     DesignSystemNavigation(
-      barItem: .init(),
+      barItem: .init(backAction: .init(image: Image(systemName: "chevron.left"), action: { store.send(.routeToBack) })),
       largeTitle: "Sign Up")
     {
       VStack(spacing: 32) {
@@ -99,6 +105,7 @@ extension SignUpPage: View {
       .padding(16)
     }
     .toolbarVisibility(.hidden, for: .navigationBar)
+    .setRequestFlightView(isLoading: isLoading)
     .onAppear {
       isFocused = .email
     }

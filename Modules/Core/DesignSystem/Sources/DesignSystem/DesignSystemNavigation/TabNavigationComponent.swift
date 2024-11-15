@@ -1,4 +1,3 @@
-import Architecture
 import SwiftUI
 
 // MARK: - TabNavigationComponent
@@ -60,17 +59,17 @@ extension TabNavigationComponent {
       self.activeMatchPath = activeMatchPath
       itemList = [
         .init(
-          matchPath: Link.Dashboard.Path.home.rawValue,
+          matchPath: "home",
           activeMatchPath: activeMatchPath,
           icon: Image(systemName: "house")),
 
         .init(
-          matchPath: Link.Dashboard.Path.search.rawValue,
+          matchPath: "search",
           activeMatchPath: activeMatchPath,
           icon: Image(systemName: "magnifyingglass")),
 
         .init(
-          matchPath: Link.Dashboard.Path.me.rawValue,
+          matchPath: "me",
           activeMatchPath: activeMatchPath,
           icon: Image(systemName: "person")),
       ]

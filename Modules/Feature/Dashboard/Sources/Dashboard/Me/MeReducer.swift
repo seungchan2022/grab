@@ -76,7 +76,7 @@ struct MeReducer {
         state.fetchUpdateUserName.isLoading = false
         switch result {
         case .success:
-          sideEffect.useCaseGroup.toastViewModel.send(message: "유점 이름 변경")
+          sideEffect.useCaseGroup.toastViewModel.send(message: "유저 이름 변경")
           return .run { await $0(.getUser) }
 
         case .failure(let error):

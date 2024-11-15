@@ -1,5 +1,6 @@
 import Domain
 import FirebaseAuth
+import FirebaseFirestore
 import Foundation
 
 // MARK: - AuthUseCasePlatform
@@ -11,11 +12,19 @@ public struct AuthUseCasePlatform {
 // MARK: AuthUseCase
 
 extension AuthUseCasePlatform: AuthUseCase {
-
   public var signUpEmail: (AuthEntity.Email.Request) async throws -> Void {
     { req in
       do {
-        try await Auth.auth().createUser(withEmail: req.email, password: req.password)
+        let result = try await Auth.auth().createUser(withEmail: req.email, password: req.password)
+
+        let userName = req.email.components(separatedBy: "@").first ?? ""
+
+        let changeRequest = result.user.createProfileChangeRequest()
+        changeRequest.displayName = userName
+        try await changeRequest.commitChanges()
+
+        try await uploadUserData(id: result.user.uid, email: req.email, userName: userName)
+
       } catch {
         throw CompositeErrorRepository.other(error)
       }
@@ -67,10 +76,12 @@ extension AuthUseCasePlatform: AuthUseCase {
       guard let me = Auth.auth().currentUser else { return }
 
       let credential = EmailAuthProvider.credential(withEmail: me.email ?? "", password: currPassword)
+      let userRef = Firestore.firestore().collection("users")
 
       do {
         try await me.reauthenticate(with: credential)
         try await me.delete()
+        try await userRef.document(me.uid).delete()
       } catch {
         throw CompositeErrorRepository.other(error)
       }
@@ -98,10 +109,12 @@ extension AuthUseCasePlatform: AuthUseCase {
     { newName in
       guard let me = Auth.auth().currentUser else { return }
 
+      let userRef = Firestore.firestore().collection("users")
       do {
         let changeRequest = me.createProfileChangeRequest()
         changeRequest.displayName = newName
         try await changeRequest.commitChanges()
+        try await userRef.document(me.uid).updateData(["userName": newName])
       } catch {
         throw CompositeErrorRepository.other(error)
       }
@@ -116,5 +129,13 @@ extension User {
       userName: displayName,
       email: email,
       photoURL: photoURL?.absoluteString)
+  }
+}
+
+extension AuthUseCasePlatform {
+  private func uploadUserData(id: String, email: String, userName: String) async throws {
+    let user = AuthEntity.Me.Response(uid: id, userName: userName, email: email, photoURL: .none)
+    guard let encodedUser = try? Firestore.Encoder().encode(user) else { return }
+    try await Firestore.firestore().collection("users").document(id).setData(encodedUser)
   }
 }

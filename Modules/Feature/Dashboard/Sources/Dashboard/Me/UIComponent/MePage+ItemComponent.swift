@@ -45,7 +45,7 @@ extension MePage.ItemComponent: View {
       HStack {
         VStack(alignment: .leading, spacing: 16) {
           Text("이름")
-          Text(userName)
+          Text(viewState.user.userName ?? "")
         }
 
         Spacer()
