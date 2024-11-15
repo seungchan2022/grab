@@ -49,7 +49,7 @@ struct HomeReducer {
         switch result {
         case .success(let item):
           state.fetchItem.value = item
-          state.itemList = state.itemList + item.itemList
+          state.itemList = state.itemList.merge(item.itemList)
           return .none
 
         case .failure(let error):
@@ -112,5 +112,16 @@ extension HomeReducer {
     case teardown
     case requestItem
     case requestSignOut
+  }
+}
+
+extension [NewsEntity.TopHeadlines.Item] {
+  fileprivate func merge(_ target: Self) -> Self {
+    let new = target.reduce(self) { curr, next in
+      guard !self.contains(where: { $0.url == next.url }) else { return curr }
+      return curr + [next]
+    }
+
+    return new
   }
 }
