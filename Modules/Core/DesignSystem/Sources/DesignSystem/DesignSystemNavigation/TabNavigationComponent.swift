@@ -1,3 +1,4 @@
+import Architecture
 import SwiftUI
 
 // MARK: - TabNavigationComponent
@@ -59,14 +60,19 @@ extension TabNavigationComponent {
       self.activeMatchPath = activeMatchPath
       itemList = [
         .init(
-          matchPath: "news",
+          matchPath: Link.Dashboard.Path.home.rawValue,
           activeMatchPath: activeMatchPath,
-          icon: Image(systemName: "newspaper.fill")),
+          icon: Image(systemName: "house")),
 
         .init(
-          matchPath: "search",
+          matchPath: Link.Dashboard.Path.search.rawValue,
           activeMatchPath: activeMatchPath,
           icon: Image(systemName: "magnifyingglass")),
+
+        .init(
+          matchPath: Link.Dashboard.Path.me.rawValue,
+          activeMatchPath: activeMatchPath,
+          icon: Image(systemName: "person")),
       ]
     }
 
@@ -99,7 +105,7 @@ extension Color {
     { isActive in
       var color: Color {
         isActive == true
-          ? Color(.systemRed)
+          ? Color(.systemBlue)
           : Color(.systemGray6)
       }
       return color

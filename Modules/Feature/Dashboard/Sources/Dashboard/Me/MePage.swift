@@ -1,3 +1,4 @@
+import Architecture
 import ComposableArchitecture
 import DesignSystem
 import SwiftUI
@@ -8,13 +9,17 @@ struct MePage {
   @Bindable var store: StoreOf<MeReducer>
 }
 
-extension MePage { }
+extension MePage {
+  private var tabNavigationComponentViewState: TabNavigationComponent.ViewState {
+    .init(activeMatchPath: Link.Dashboard.Path.me.rawValue)
+  }
+}
 
 // MARK: View
 
 extension MePage: View {
   var body: some View {
-    VStack {
+    VStack(spacing: .zero) {
       DesignSystemNavigation(
         barItem: .init(),
         largeTitle: "Me")
@@ -38,6 +43,10 @@ extension MePage: View {
             })
         }
       }
+
+      TabNavigationComponent(
+        viewState: tabNavigationComponentViewState,
+        tapAction: { store.send(.routeToTabBarItem($0)) })
     }
     .alert(
       "이름을 변경하시겠습니까?",
@@ -94,6 +103,7 @@ extension MePage: View {
       Text("계정을 탈퇴 하려면 현재 비밀번호를 입력하고, 확인 버튼을 눌러주세요.")
     }
     .toolbar(.hidden, for: .navigationBar)
+    .ignoresSafeArea(.all, edges: .bottom)
     .onAppear {
       store.send(.getUser)
     }

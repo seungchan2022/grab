@@ -109,6 +109,10 @@ struct MeReducer {
         sideEffect.routeToSignIn()
         return .none
 
+      case .routeToTabBarItem(let matchPath):
+        sideEffect.routeToTabBarItem(matchPath)
+        return .none
+
       case .throwError(let error):
         sideEffect.useCaseGroup.toastViewModel.send(errorMessage: error.displayMessage)
         return .none
@@ -177,6 +181,8 @@ extension MeReducer {
 
     case routeToUpdatePassword
     case routeToSignIn
+
+    case routeToTabBarItem(String)
 
     case throwError(CompositeErrorRepository)
   }

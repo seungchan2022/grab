@@ -112,6 +112,7 @@ extension SignInPage: View {
       message: {
         Text("계정과 연결된 이메일 주소를 입력하면, 비밀번호 재설정 링크가 이메일로 전송됩니다.")
       })
+    .toolbarVisibility(.hidden, for: .navigationBar)
     .onAppear {
       isFocused = .email
     }

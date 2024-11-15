@@ -42,6 +42,7 @@ extension DesignSystemNavigation: View {
                 VStack(spacing: .zero) {
                   Text(largeTitle)
                     .font(.title3)
+                    .fontWeight(.semibold)
                     .foregroundStyle(.black)
                     .transition(.opacity)
                     .animation(.easeInOut, value: showInlineTitle)

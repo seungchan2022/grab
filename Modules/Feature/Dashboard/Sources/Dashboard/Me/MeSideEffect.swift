@@ -83,4 +83,12 @@ extension MeSideEffect {
         prefersLargeTitles: .none)
     }
   }
+
+  var routeToTabBarItem: (String) -> Void {
+    { path in
+      guard path != Link.Dashboard.Path.me.rawValue else { return }
+      navigator.replace(linkItem: .init(path: path), isAnimated: false)
+    }
+  }
+
 }

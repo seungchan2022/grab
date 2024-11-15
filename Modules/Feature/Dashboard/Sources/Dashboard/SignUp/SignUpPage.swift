@@ -98,6 +98,7 @@ extension SignUpPage: View {
       }
       .padding(16)
     }
+    .toolbarVisibility(.hidden, for: .navigationBar)
     .onAppear {
       isFocused = .email
     }

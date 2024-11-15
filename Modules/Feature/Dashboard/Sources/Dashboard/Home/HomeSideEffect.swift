@@ -52,4 +52,11 @@ extension HomeSideEffect {
         isAnimated: false)
     }
   }
+
+  var routeToTabBarItem: (String) -> Void {
+    { path in
+      guard path != Link.Dashboard.Path.home.rawValue else { return }
+      navigator.replace(linkItem: .init(path: path), isAnimated: false)
+    }
+  }
 }

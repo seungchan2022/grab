@@ -59,6 +59,10 @@ struct SearchReducer {
         sideEffect.routeToBack()
         return .none
 
+      case .routeToTabBarItem(let matchPath):
+        sideEffect.routeToTabBarItem(matchPath)
+        return .none
+
       case .throwError(let error):
         sideEffect.useCaseGroup.toastViewModel.send(errorMessage: error.displayMessage)
         return .none
@@ -97,6 +101,8 @@ extension SearchReducer {
     case fetchSearchItem(Result<NewsEntity.Search.Composite, CompositeErrorRepository>)
 
     case onTapBack
+
+    case routeToTabBarItem(String)
 
     case throwError(CompositeErrorRepository)
   }

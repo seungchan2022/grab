@@ -42,4 +42,11 @@ extension SearchSideEffect {
       navigator.back(isAnimated: true)
     }
   }
+
+  var routeToTabBarItem: (String) -> Void {
+    { path in
+      guard path != Link.Dashboard.Path.search.rawValue else { return }
+      navigator.replace(linkItem: .init(path: path), isAnimated: false)
+    }
+  }
 }

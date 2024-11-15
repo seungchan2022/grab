@@ -56,6 +56,10 @@ struct HomeReducer {
           return .run { await $0(.throwError(error)) }
         }
 
+      case .routeToTabBarItem(let matchPath):
+        sideEffect.routeToTabBarItem(matchPath)
+        return .none
+
       case .throwError(let error):
         sideEffect.useCaseGroup.toastViewModel.send(errorMessage: error.displayMessage)
         return .none
@@ -94,6 +98,8 @@ extension HomeReducer {
 
     case getItem
     case fetchItem(Result<NewsEntity.TopHeadlines.Response, CompositeErrorRepository>)
+
+    case routeToTabBarItem(String)
 
     case throwError(CompositeErrorRepository)
   }
