@@ -3,9 +3,9 @@ import DesignSystem
 import Domain
 import SwiftUI
 
-// MARK: - MePage.ItemComponent
+// MARK: - UpdateAuthPage.ItemComponent
 
-extension MePage {
+extension UpdateAuthPage {
   struct ItemComponent {
     let viewState: ViewState
     let nameTapAction: () -> Void
@@ -16,7 +16,7 @@ extension MePage {
   }
 }
 
-extension MePage.ItemComponent {
+extension UpdateAuthPage.ItemComponent {
   private var userName: String {
     guard let userName = viewState.user.userName
     else { return viewState.user.email?.components(separatedBy: "@").first ?? "" }
@@ -24,9 +24,9 @@ extension MePage.ItemComponent {
   }
 }
 
-// MARK: - MePage.ItemComponent + View
+// MARK: - UpdateAuthPage.ItemComponent + View
 
-extension MePage.ItemComponent: View {
+extension UpdateAuthPage.ItemComponent: View {
   var body: some View {
     VStack(spacing: 16) {
       HStack {
@@ -74,23 +74,17 @@ extension MePage.ItemComponent: View {
 
       Divider()
 
-      HStack(spacing: 40) {
-        Button(action: { signOutTapAction() }) {
-          Text("로그아웃")
-        }
-
-        Button(action: { deleteTapAction() }) {
-          Text("계정 탈퇴")
-        }
+      Button(action: { deleteTapAction() }) {
+        Text("계정 탈퇴")
       }
       .padding(.top, 64)
     }
   }
 }
 
-// MARK: - MePage.ItemComponent.ViewState
+// MARK: - UpdateAuthPage.ItemComponent.ViewState
 
-extension MePage.ItemComponent {
+extension UpdateAuthPage.ItemComponent {
   struct ViewState: Equatable {
     let user: AuthEntity.Me.Response
   }

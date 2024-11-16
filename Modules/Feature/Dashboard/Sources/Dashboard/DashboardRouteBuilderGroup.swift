@@ -18,6 +18,7 @@ extension DashboardRouteBuilderGroup {
       SignUpRouteBuilder.generate(),
       MeRouteBuilder.generate(),
       UpdatePasswordRouteBuilder.generate(),
+      UpdataAuthRouteBuilder.generate(),
     ]
   }
 }
