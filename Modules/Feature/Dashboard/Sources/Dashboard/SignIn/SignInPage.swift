@@ -28,9 +28,19 @@ extension SignInPage: View {
       largeTitle: "Sign In")
     {
       VStack(spacing: 48) {
-        EmailTextFieldComponent(store: store)
+        TextFieldComponent(
+          viewState: .init(),
+          text: $store.emailText,
+          isShowText: .constant(false),
+          placeholder: "이메일",
+          isSecure: false)
 
-        PasswordTextFieldComponent(store: store)
+        TextFieldComponent(
+          viewState: .init(),
+          text: $store.passwordText,
+          isShowText: $store.isShowPassword,
+          placeholder: "비밀번호",
+          isSecure: true)
 
         Button(action: { store.send(.onTapSignIn) }) {
           Text("로그인")

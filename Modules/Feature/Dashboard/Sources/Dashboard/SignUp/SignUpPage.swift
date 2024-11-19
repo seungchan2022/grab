@@ -38,23 +38,35 @@ extension SignUpPage: View {
       largeTitle: "Sign Up")
     {
       VStack(spacing: 48) {
-        EmailTextFieldComponent(
-          store: store,
-          errorMessage: store.isValidEmail ? .none : "유효한 이메일 주소가 아닙니다.")
+        TextFieldComponent(
+          viewState: .init(),
+          text: $store.emailText,
+          isShowText: .constant(false),
+          placeholder: "이메일",
+          errorMessage: store.isValidEmail ? .none : "유효한 이메일 주소 x",
+          isSecure: false)
           .onChange(of: store.emailText) { _, new in
             store.isValidEmail = Validator.validateEmail(email: new)
           }
 
-        PasswordTextFieldComponent(
-          store: store,
-          errorMessage: store.isValidPassword ? .none : "영어대문자, 숫자, 특수문자를 모두 사용하여 8 ~ 20자리로 설정해주세요.")
+        TextFieldComponent(
+          viewState: .init(),
+          text: $store.passwordText,
+          isShowText: $store.isShowPassword,
+          placeholder: "비밀번호",
+          errorMessage: store.isValidPassword ? .none : "영어대문자, 숫자, 특수문자를 모두 사용하여 8 ~ 20자리로 설정해주세요.",
+          isSecure: true)
           .onChange(of: store.passwordText) { _, new in
             store.isValidPassword = Validator.validatePassword(password: new)
           }
 
-        ConfirmTextFieldComponent(
-          store: store,
-          errorMessage: store.isValidConfirmPassword ? .none : "비밀번호가 일치하지 않습니다.")
+        TextFieldComponent(
+          viewState: .init(),
+          text: $store.confirmPasswordText,
+          isShowText: $store.isShowConfirmPassword,
+          placeholder: "비밀번호 확인",
+          errorMessage: store.isValidConfirmPassword ? .none : "비밀번호가 일치하지 않습니다.",
+          isSecure: true)
           .onChange(of: store.confirmPasswordText) { _, new in
             store.isValidConfirmPassword = isValidConfirmPassword(text: new)
           }

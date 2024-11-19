@@ -1,12 +1,11 @@
 import ComposableArchitecture
 import SwiftUI
 
-// MARK: - SignInPage.ResetPasswordComponent
 
+// MARK: - SignInPage.ResetPasswordComponent
 extension SignInPage {
   struct ResetPasswordComponent {
     @Bindable var store: StoreOf<SignInReducer>
-
     let tapAction: () -> Void
   }
 }
@@ -22,13 +21,11 @@ extension SignInPage.ResetPasswordComponent: View {
         Text("비밀번호 재설정")
           .font(.title)
           .fontWeight(.bold)
-
         Text("계정과 연결된 이메일 주소를 입력하면, 비밀번호 재설정 링크가 해당 이메일로 전송됩니다.")
           .fixedSize(horizontal: false, vertical: true)
           .foregroundStyle(.secondary)
       }
       .multilineTextAlignment(.center)
-
       TextField("이메일", text: $store.resetEmailText)
         .padding(.leading)
         .frame(maxWidth: .infinity)
@@ -37,7 +34,6 @@ extension SignInPage.ResetPasswordComponent: View {
         .clipShape(.rect(cornerRadius: 16))
         .textInputAutocapitalization(.never)
         .autocorrectionDisabled(true)
-
       Button(action: { tapAction() }) {
         Text("재설정 링크 전송")
           .foregroundStyle(.white)
@@ -48,16 +44,13 @@ extension SignInPage.ResetPasswordComponent: View {
           .opacity(store.resetEmailText.isEmpty ? 0.3 : 1.0)
       }
       .disabled(store.resetEmailText.isEmpty)
-
       Spacer()
     }
     .padding()
     .padding(.top, 20)
   }
 }
-
 // MARK: - SignInPage.ResetPasswordComponent.ViewState
-
 extension SignInPage.ResetPasswordComponent {
   struct ViewState: Equatable { }
 }

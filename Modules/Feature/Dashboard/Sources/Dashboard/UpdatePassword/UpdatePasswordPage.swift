@@ -40,20 +40,32 @@ extension UpdatePasswordPage: View {
         isShowDivider: true)
       {
         VStack(spacing: 48) {
-          CurrentTextFieldComponent(
-            store: store,
-            errorMessage: .none)
+          TextFieldComponent(
+            viewState: .init(),
+            text: $store.currPasswordText,
+            isShowText: $store.isShowCurrPassword,
+            placeholder: "현재 비밀번호",
+            errorMessage: .none,
+            isSecure: true)
 
-          PasswordTextFieldComponent(
-            store: store,
-            errorMessage: store.isValidPassword ? .none : "영어대문자, 숫자, 특수문자를 모두 사용하여 8 ~ 20자리로 설정해주세요.")
+          TextFieldComponent(
+            viewState: .init(),
+            text: $store.newPasswordText,
+            isShowText: $store.isShowNewPassword,
+            placeholder: "변경할 비밀번호",
+            errorMessage: store.isValidPassword ? .none : "영어대문자, 숫자, 특수문자를 모두 사용하여 8 ~ 20자리로 설정해주세요.",
+            isSecure: true)
             .onChange(of: store.newPasswordText) { _, new in
               store.isValidPassword = Validator.validatePassword(password: new)
             }
 
-          ConfirmTextFieldComponent(
-            store: store,
-            errorMessage: store.isValidConfirmPassword ? .none : "비밀번호가 일치하지 않습니다.")
+          TextFieldComponent(
+            viewState: .init(),
+            text: $store.confirmPasswordText,
+            isShowText: $store.isShowConfirmPassword,
+            placeholder: "현재 비밀번호",
+            errorMessage: store.isValidConfirmPassword ? .none : "비밀번호가 일치하지 않습니다.",
+            isSecure: true)
             .onChange(of: store.confirmPasswordText) { _, new in
               store.isValidConfirmPassword = isValidConfirmPassword(text: new)
             }
