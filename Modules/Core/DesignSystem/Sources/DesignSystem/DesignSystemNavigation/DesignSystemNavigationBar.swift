@@ -83,7 +83,6 @@ extension DesignSystemNavigationBar: View {
         if let title {
           Text(title)
             .font(.title3)
-            .fontWeight(.semibold)
         }
       }
       .overlay(alignment: .trailing) {
