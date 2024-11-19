@@ -49,6 +49,7 @@ struct SignInReducer {
         switch result {
         case .success:
           sideEffect.useCaseGroup.toastViewModel.send(message: "재설정 링크가 발송되었습니다.")
+          state.isShowResetPassword = false
           return .none
 
         case .failure(let error):

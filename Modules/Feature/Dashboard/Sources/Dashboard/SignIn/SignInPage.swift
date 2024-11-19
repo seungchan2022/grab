@@ -2,19 +2,10 @@ import ComposableArchitecture
 import DesignSystem
 import SwiftUI
 
-// MARK: - SignInFocus
-
-enum SignInFocus {
-  case email
-  case password
-}
-
 // MARK: - SignInPage
 
 struct SignInPage {
   @Bindable var store: StoreOf<SignInReducer>
-
-  @FocusState private var isFocused: SignInFocus?
 
   @Environment(\.colorScheme) var colorScheme
 }
@@ -36,26 +27,10 @@ extension SignInPage: View {
       barItem: .init(),
       largeTitle: "Sign In")
     {
-      VStack(spacing: 32) {
-        TextFieldComponent(
-          viewState: .init(),
-          title: "이메일 주소",
-          placeholder: "이메일",
-          isSecure: false,
-          toggleAction: .none,
-          isFocused: $isFocused,
-          focusType: .email,
-          text: $store.emailText)
+      VStack(spacing: 48) {
+        EmailTextFieldComponent(store: store)
 
-        TextFieldComponent(
-          viewState: .init(),
-          title: "비밀번호",
-          placeholder: "비밀번호",
-          isSecure: !store.isShowPassword,
-          toggleAction: { store.isShowPassword.toggle() },
-          isFocused: $isFocused,
-          focusType: .password,
-          text: $store.passwordText)
+        PasswordTextFieldComponent(store: store)
 
         Button(action: { store.send(.onTapSignIn) }) {
           Text("로그인")
@@ -83,7 +58,11 @@ extension SignInPage: View {
 
           Spacer()
 
-          Button(action: { store.send(.routeToSignUp) }) {
+          Button(action: {
+            store.emailText = ""
+            store.passwordText = ""
+            store.send(.routeToSignUp)
+          }) {
             Text("회원 가입")
           }
 
@@ -93,29 +72,15 @@ extension SignInPage: View {
       }
       .padding(16)
     }
-    .alert(
-      "비밀번호 재설정",
-      isPresented: $store.isShowResetPassword,
-      actions: {
-        TextField("이메일", text: $store.resetEmailText)
-          .autocorrectionDisabled(true)
-          .textInputAutocapitalization(.never)
+    .sheet(isPresented: $store.isShowResetPassword, content: {
+      ResetPasswordComponent(
+        store: store,
+        tapAction: { store.send(.onTapResetPassword) })
+        .presentationDetents([.fraction(0.4)])
+    })
 
-        Button(role: .cancel, action: { store.isShowResetPassword = false }) {
-          Text("취소")
-        }
-
-        Button(action: { store.send(.onTapResetPassword) }) {
-          Text("확인")
-        }
-      },
-      message: {
-        Text("계정과 연결된 이메일 주소를 입력하면, 비밀번호 재설정 링크가 이메일로 전송됩니다.")
-      })
     .toolbarVisibility(.hidden, for: .navigationBar)
-    .onAppear {
-      isFocused = .email
-    }
+    .onAppear { }
     .onDisappear {
       store.send(.teardown)
     }
