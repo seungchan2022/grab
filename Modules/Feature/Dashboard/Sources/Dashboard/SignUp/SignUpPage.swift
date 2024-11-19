@@ -3,20 +3,10 @@ import DesignSystem
 import Functor
 import SwiftUI
 
-// MARK: - SignUpFocus
-
-enum SignUpFocus {
-  case email
-  case password
-  case confirmPassword
-}
-
 // MARK: - SignUpPage
 
 struct SignUpPage {
   @Bindable var store: StoreOf<SignUpReducer>
-
-  @FocusState private var isFocused: SignUpFocus?
 
 }
 
@@ -37,7 +27,6 @@ extension SignUpPage {
   private func isValidConfirmPassword(text: String) -> Bool {
     store.passwordText == text
   }
-
 }
 
 // MARK: View
@@ -48,45 +37,24 @@ extension SignUpPage: View {
       barItem: .init(backAction: .init(image: Image(systemName: "chevron.left"), action: { store.send(.routeToBack) })),
       largeTitle: "Sign Up")
     {
-      VStack(spacing: 32) {
-        TextFieldComponent(
-          viewState: .init(),
-          title: "이메일 주소",
-          placeholder: "이메일",
-          isSecure: false,
-          errorMessage: store.isValidEmail ? .none : "유효한 이메일 주소가 아닙니다.",
-          toggleAction: .none,
-          isFocused: $isFocused,
-          focusType: .email,
-          text: $store.emailText)
+      VStack(spacing: 48) {
+        EmailTextFieldComponent(
+          store: store,
+          errorMessage: store.isValidEmail ? .none : "유효한 이메일 주소가 아닙니다.")
           .onChange(of: store.emailText) { _, new in
             store.isValidEmail = Validator.validateEmail(email: new)
           }
 
-        TextFieldComponent(
-          viewState: .init(),
-          title: "비밀번호",
-          placeholder: "비밀번호",
-          isSecure: !store.isShowPassword,
-          errorMessage: store.isValidPassword ? .none : "영어대문자, 숫자, 특수문자를 모두 사용하여 8 ~ 20자리로 설정해주세요.",
-          toggleAction: { store.isShowPassword.toggle() },
-          isFocused: $isFocused,
-          focusType: .password,
-          text: $store.passwordText)
+        PasswordTextFieldComponent(
+          store: store,
+          errorMessage: store.isValidPassword ? .none : "영어대문자, 숫자, 특수문자를 모두 사용하여 8 ~ 20자리로 설정해주세요.")
           .onChange(of: store.passwordText) { _, new in
             store.isValidPassword = Validator.validatePassword(password: new)
           }
 
-        TextFieldComponent(
-          viewState: .init(),
-          title: "비밀번호 확인",
-          placeholder: "비밀번호 확인",
-          isSecure: !store.isShowConfirmPassword,
-          errorMessage: store.isValidConfirmPassword ? .none : "비밀번호가 일치하지 않습니다.",
-          toggleAction: { store.isShowConfirmPassword.toggle() },
-          isFocused: $isFocused,
-          focusType: .confirmPassword,
-          text: $store.confirmPasswordText)
+        ConfirmTextFieldComponent(
+          store: store,
+          errorMessage: store.isValidConfirmPassword ? .none : "비밀번호가 일치하지 않습니다.")
           .onChange(of: store.confirmPasswordText) { _, new in
             store.isValidConfirmPassword = isValidConfirmPassword(text: new)
           }
@@ -106,9 +74,7 @@ extension SignUpPage: View {
     }
     .toolbarVisibility(.hidden, for: .navigationBar)
     .setRequestFlightView(isLoading: isLoading)
-    .onAppear {
-      isFocused = .email
-    }
+    .onAppear { }
     .onDisappear {
       store.send(.teardown)
     }
