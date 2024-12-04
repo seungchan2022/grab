@@ -4,4 +4,7 @@
 import CombineExt
 import Domain
 import FirebaseAuth
+import KakaoSDKAuth
+import KakaoSDKCommon
+import KakaoSDKUser
 import Logging

@@ -58,6 +58,19 @@ extension [String: Plist.Value] {
       "CFBundleInfoDictionaryVersion": "6.0",
       "CFBundleVersion": .string(.appBuildVersion()),
       "UILaunchScreen": .dictionary([:]),
+      "LSApplicationQueriesSchemes": .array([
+        .string("kakaokompassauth"),
+        .string("kakaolink"),
+      ]),
+      "CFBundleURLTypes": .array([
+        .dictionary([
+          "CFBundleTypeRole": .string("Editor"),
+          "CFBundleURLSchemes": .array([
+            .string("kakao${KAKAO_NATIVE_APP_KEY}"),
+          ]),
+        ]),
+      ]),
+      "KAKAO_NATIVE_APP_KEY": .string("${KAKAO_NATIVE_APP_KEY}"),
     ]
   }
 }

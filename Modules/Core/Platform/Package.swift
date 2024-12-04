@@ -22,6 +22,9 @@ let package = Package(
     .package(
       url: "https://github.com/firebase/firebase-ios-sdk.git",
       .upToNextMajor(from: "11.5.0")),
+    .package(
+      url: "https://github.com/kakao/kakao-ios-sdk.git",
+      .upToNextMajor(from: "2.23.0")),
   ],
   targets: [
     .target(
@@ -33,5 +36,8 @@ let package = Package(
         .product(name: "Logging", package: "swift-log"),
         .product(name: "FirebaseAuth", package: "firebase-ios-sdk"),
         .product(name: "FirebaseFirestore", package: "firebase-ios-sdk"),
+        .product(name: "KakaoSDK", package: "kakao-ios-sdk"),
+        .product(name: "KakaoSDKAuth", package: "kakao-ios-sdk"),
+        .product(name: "KakaoSDKUser", package: "kakao-ios-sdk"),
       ]),
   ])

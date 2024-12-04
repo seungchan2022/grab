@@ -1,5 +1,6 @@
 import FirebaseCore
 import Foundation
+import KakaoSDKCommon
 import LinkNavigator
 import UIKit
 
@@ -10,8 +11,11 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
   var dependency: AppSideEffect { container.dependency }
   var navigator: SingleLinkNavigator { container.navigator }
 
-  func application(_: UIApplication, didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
+  func application(_: UIApplication, didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+    let kakaoAppKey = Bundle.main.infoDictionary?["KAKAO_NATIVE_APP_KEY"] ?? ""
+
     FirebaseApp.configure()
+    KakaoSDK.initSDK(appKey: kakaoAppKey as! String)
     return true
   }
 
