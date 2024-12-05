@@ -1,7 +1,10 @@
+import Architecture
 import Domain
 import FirebaseAuth
 import FirebaseFirestore
 import Foundation
+import KakaoSDKAuth
+import KakaoSDKUser
 
 // MARK: - AuthUseCasePlatform
 
@@ -45,6 +48,15 @@ extension AuthUseCasePlatform: AuthUseCase {
     {
       do {
         try Auth.auth().signOut()
+
+        UserApi.shared.logout { error in
+          if let error {
+            Logger.error("Logout failed with error: \(error.localizedDescription)")
+          } else {
+            Logger.debug("Logout succeeded.")
+          }
+        }
+
       } catch {
         throw CompositeErrorRepository.other(error)
       }
@@ -120,9 +132,23 @@ extension AuthUseCasePlatform: AuthUseCase {
       }
     }
   }
+
+  public var signInKakao: () async throws -> Bool {
+    {
+      do {
+        if UserApi.isKakaoTalkLoginAvailable() {
+          return try await handleLoginWithApp()
+        } else {
+          return try await handleLoginWithWeb()
+        }
+      } catch {
+        throw CompositeErrorRepository.other(error)
+      }
+    }
+  }
 }
 
-extension User {
+extension FirebaseAuth.User {
   fileprivate func serialized() -> AuthEntity.Me.Response {
     .init(
       uid: uid,
@@ -133,6 +159,37 @@ extension User {
 }
 
 extension AuthUseCasePlatform {
+
+  @MainActor
+  private func handleLoginWithApp() async throws -> Bool {
+    try await withCheckedThrowingContinuation { continuation in
+      UserApi.shared.loginWithKakaoTalk { _, error in
+        if let error {
+          Logger.error("Error during login with KakaoTalk: \(error)")
+          continuation.resume(throwing: error)
+        } else {
+          Logger.debug("loginWithKakaoTalk() success.")
+          continuation.resume(returning: true)
+        }
+      }
+    }
+  }
+
+  @MainActor
+  private func handleLoginWithWeb() async throws -> Bool {
+    try await withCheckedThrowingContinuation { continuation in
+      UserApi.shared.loginWithKakaoAccount { _, error in
+        if let error {
+          Logger.error("Error during login with KakaoAccount: \(error)")
+          continuation.resume(throwing: error)
+        } else {
+          Logger.debug("loginWithKakaoAccount() success.")
+          continuation.resume(returning: true)
+        }
+      }
+    }
+  }
+
   private func uploadUserData(id: String, email: String, userName: String) async throws {
     let user = AuthEntity.Me.Response(uid: id, userName: userName, email: email, photoURL: .none)
     guard let encodedUser = try? Firestore.Encoder().encode(user) else { return }

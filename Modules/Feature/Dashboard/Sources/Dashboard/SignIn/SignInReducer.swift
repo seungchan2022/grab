@@ -33,6 +33,12 @@ struct SignInReducer {
           .resetPassword(state.resetEmailText)
           .cancellable(pageID: state.id, id: CancelID.requestResetPassword, cancelInFlight: true)
 
+      case .onTapKakaoSignIn:
+        state.fetchKakaoSignIn.isLoading = true
+        return sideEffect
+          .signInKakao()
+          .cancellable(pageID: state.id, id: CancelID.requestKakaoSignIn, cancelInFlight: true)
+
       case .fetchSignIn(let result):
         state.fetchSignIn.isLoading = false
         switch result {
@@ -50,6 +56,24 @@ struct SignInReducer {
         case .success:
           sideEffect.useCaseGroup.toastViewModel.send(message: "재설정 링크가 발송되었습니다.")
           state.isShowResetPassword = false
+          return .none
+
+        case .failure(let error):
+          return .run { await $0(.throwError(error)) }
+        }
+
+      case .fetchKakaoSignIn(let result):
+        state.fetchKakaoSignIn.isLoading = false
+        switch result {
+        case .success(let success):
+          switch success {
+          case true:
+            sideEffect.routeToHome()
+            sideEffect.useCaseGroup.toastViewModel.send(message: "로그인 성공")
+
+          case false:
+            sideEffect.useCaseGroup.toastViewModel.send(errorMessage: "로그인 실패")
+          }
           return .none
 
         case .failure(let error):
@@ -93,6 +117,7 @@ extension SignInReducer {
 
     var fetchSignIn: FetchState.Data<Bool?> = .init(isLoading: false, value: .none)
     var fetchResetPassword: FetchState.Data<Bool?> = .init(isLoading: false, value: .none)
+    var fetchKakaoSignIn: FetchState.Data<Bool?> = .init(isLoading: false, value: . none)
 
     init(id: UUID = UUID()) {
       self.id = id
@@ -105,9 +130,11 @@ extension SignInReducer {
 
     case onTapSignIn
     case onTapResetPassword
+    case onTapKakaoSignIn
 
     case fetchSignIn(Result<Bool, CompositeErrorRepository>)
     case fetchResetPassword(Result<Bool, CompositeErrorRepository>)
+    case fetchKakaoSignIn(Result<Bool, CompositeErrorRepository>)
 
     case routeToSignUp
     case routeToHome
@@ -124,5 +151,6 @@ extension SignInReducer {
     case requestSignIn
     case requestResetPassword
     case requestGoogleSignIn
+    case requestKakaoSignIn
   }
 }

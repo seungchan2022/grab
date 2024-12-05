@@ -1,8 +1,8 @@
 import ComposableArchitecture
 import SwiftUI
 
-
 // MARK: - SignInPage.ResetPasswordComponent
+
 extension SignInPage {
   struct ResetPasswordComponent {
     @Bindable var store: StoreOf<SignInReducer>
@@ -50,7 +50,9 @@ extension SignInPage.ResetPasswordComponent: View {
     .padding(.top, 20)
   }
 }
+
 // MARK: - SignInPage.ResetPasswordComponent.ViewState
+
 extension SignInPage.ResetPasswordComponent {
   struct ViewState: Equatable { }
 }

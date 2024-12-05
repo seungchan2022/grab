@@ -53,6 +53,12 @@ extension SignInPage: View {
         }
         .disabled(!isActiveSignIn)
 
+        Button(action: { store.send(.onTapKakaoSignIn) }) {
+          Image("kakao_login_medium_wide")
+            .frame(height: 50)
+            .frame(maxWidth: .infinity)
+        }
+
         HStack {
           Spacer()
           Button(action: {

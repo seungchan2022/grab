@@ -16,4 +16,7 @@ public protocol AuthUseCase: Sendable {
   var updatePassword: (String, String) async throws -> Void { get }
 
   var updateUserName: (String) async throws -> Void { get }
+
+  var signInKakao: () async throws -> Bool { get }
+
 }

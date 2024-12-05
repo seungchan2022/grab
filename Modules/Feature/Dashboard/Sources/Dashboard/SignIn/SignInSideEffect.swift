@@ -45,6 +45,19 @@ extension SignInSideEffect {
     }
   }
 
+  var signInKakao: () -> Effect<SignInReducer.Action> {
+    {
+      .run { send in
+        do {
+          let response = try await useCaseGroup.authUseCase.signInKakao()
+          await send(SignInReducer.Action.fetchKakaoSignIn(.success(response)))
+        } catch {
+          await send(SignInReducer.Action.fetchKakaoSignIn(.failure(.other(error))))
+        }
+      }
+    }
+  }
+
   var routeToSignUp: () -> Void {
     {
       navigator.next(
@@ -55,7 +68,7 @@ extension SignInSideEffect {
 
   var routeToHome: () -> Void {
     {
-      navigator.next(
+      navigator.replace(
         linkItem: .init(path: Link.Dashboard.Path.me.rawValue, items: .none),
         isAnimated: true)
     }
