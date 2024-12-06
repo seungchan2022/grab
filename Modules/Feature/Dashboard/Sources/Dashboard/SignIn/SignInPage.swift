@@ -17,6 +17,13 @@ extension SignInPage {
     !store.emailText.isEmpty && !store.passwordText.isEmpty
   }
 
+  @MainActor
+  private var isLoading: Bool {
+    store.fetchSignIn.isLoading
+      || store.fetchResetPassword.isLoading
+      || store.fetchKakaoSignIn.isLoading
+  }
+
 }
 
 // MARK: View
@@ -97,6 +104,7 @@ extension SignInPage: View {
 
     .toolbarVisibility(.hidden, for: .navigationBar)
     .onAppear { }
+    .setRequestFlightView(isLoading: isLoading)
     .onDisappear {
       store.send(.teardown)
     }

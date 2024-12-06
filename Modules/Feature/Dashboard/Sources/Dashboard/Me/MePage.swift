@@ -13,6 +13,11 @@ extension MePage {
   private var tabNavigationComponentViewState: TabNavigationComponent.ViewState {
     .init(activeMatchPath: Link.Dashboard.Path.me.rawValue)
   }
+
+  @MainActor
+  private var isLoading: Bool {
+    store.fetchUser.isLoading
+  }
 }
 
 // MARK: View
@@ -28,6 +33,9 @@ extension MePage: View {
       {
         VStack {
           Text("Me Page")
+
+          Text(store.user.email ?? "1")
+          Text(store.user.userName ?? "2")
         }
       }
 
@@ -37,6 +45,7 @@ extension MePage: View {
     }
     .toolbar(.hidden, for: .navigationBar)
     .ignoresSafeArea(.all, edges: .bottom)
+    .setRequestFlightView(isLoading: isLoading)
     .onAppear {
       store.send(.getUser)
     }

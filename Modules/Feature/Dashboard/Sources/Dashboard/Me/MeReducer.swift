@@ -22,12 +22,13 @@ struct MeReducer {
           CancelID.allCases.map { .cancel(pageID: state.id, id: $0) })
 
       case .getUser:
-        state.fetchUser.isLoading = false
+        state.fetchUser.isLoading = true
         return sideEffect
           .getUser()
           .cancellable(pageID: state.id, id: CancelID.requestUser, cancelInFlight: true)
 
       case .fetchUser(let result):
+        state.fetchUser.isLoading = false
         switch result {
         case .success(let user):
           state.user = user ?? .init(uid: "", userName: "", email: "", photoURL: "")

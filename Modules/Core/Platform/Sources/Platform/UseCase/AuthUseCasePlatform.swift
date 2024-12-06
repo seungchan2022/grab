@@ -49,14 +49,6 @@ extension AuthUseCasePlatform: AuthUseCase {
       do {
         try Auth.auth().signOut()
 
-        UserApi.shared.logout { error in
-          if let error {
-            Logger.error("Logout failed with error: \(error.localizedDescription)")
-          } else {
-            Logger.debug("Logout succeeded.")
-          }
-        }
-
       } catch {
         throw CompositeErrorRepository.other(error)
       }
@@ -135,17 +127,54 @@ extension AuthUseCasePlatform: AuthUseCase {
 
   public var signInKakao: () async throws -> Bool {
     {
-      do {
-        if UserApi.isKakaoTalkLoginAvailable() {
-          return try await handleLoginWithApp()
-        } else {
-          return try await handleLoginWithWeb()
+      if AuthApi.hasToken() {
+        try await withCheckedThrowingContinuation { continuation in
+          UserApi.shared.accessTokenInfo { _, error in
+            if let error {
+              Task {
+                do {
+                  let result = try await openKakaoService()
+                  continuation.resume(returning: result)
+                } catch {
+                  continuation.resume(throwing: error)
+                }
+              }
+            } else {
+              // 토큰 유효성 체크 성공 (필요 시 토큰 갱신됨)
+              UserApi.shared.me { kakaoUser, error in
+                if let error {
+                  Logger.error("기존 회원 로그인 에러 발생: \(error.localizedDescription)")
+                  continuation.resume(throwing: error)
+                } else {
+                  Logger.debug("기존 회원 로그인 진행")
+                  guard
+                    let email = kakaoUser?.kakaoAccount?.email,
+                    let password = kakaoUser?.id
+                  else {
+                    continuation.resume(throwing: CompositeErrorRepository.incorrectUser)
+                    return
+                  }
+
+                  Task {
+                    do {
+                      try await signInEmail(.init(email: email, password: "\(password)"))
+                      continuation.resume(returning: true)
+                    } catch {
+                      Logger.error("Firebase 로그인 실패: \(error.localizedDescription)")
+                      continuation.resume(throwing: error)
+                    }
+                  }
+                }
+              }
+            }
+          }
         }
-      } catch {
-        throw CompositeErrorRepository.other(error)
+      } else {
+        try await openKakaoService()
       }
     }
   }
+
 }
 
 extension FirebaseAuth.User {
@@ -163,13 +192,18 @@ extension AuthUseCasePlatform {
   @MainActor
   private func handleLoginWithApp() async throws -> Bool {
     try await withCheckedThrowingContinuation { continuation in
-      UserApi.shared.loginWithKakaoTalk { _, error in
+      UserApi.shared.loginWithKakaoTalk { oauthToken, error in
         if let error {
           Logger.error("Error during login with KakaoTalk: \(error)")
           continuation.resume(throwing: error)
         } else {
           Logger.debug("loginWithKakaoTalk() success.")
-          continuation.resume(returning: true)
+          if let token = oauthToken {
+            Task {
+              await uploadKakaoInfoToFirebase()
+              continuation.resume(returning: true)
+            }
+          }
         }
       }
     }
@@ -178,13 +212,18 @@ extension AuthUseCasePlatform {
   @MainActor
   private func handleLoginWithWeb() async throws -> Bool {
     try await withCheckedThrowingContinuation { continuation in
-      UserApi.shared.loginWithKakaoAccount { _, error in
+      UserApi.shared.loginWithKakaoAccount { oauthToken, error in
         if let error {
           Logger.error("Error during login with KakaoAccount: \(error)")
           continuation.resume(throwing: error)
         } else {
           Logger.debug("loginWithKakaoAccount() success.")
-          continuation.resume(returning: true)
+          if let token = oauthToken {
+            Task {
+              await uploadKakaoInfoToFirebase()
+              continuation.resume(returning: true)
+            }
+          }
         }
       }
     }
@@ -195,4 +234,39 @@ extension AuthUseCasePlatform {
     guard let encodedUser = try? Firestore.Encoder().encode(user) else { return }
     try await Firestore.firestore().collection("users").document(id).setData(encodedUser)
   }
+
+  private func uploadKakaoInfoToFirebase() async {
+    UserApi.shared.me { kakaoUser, error in
+      if let error {
+        Logger.error("DEBUG: 카카오톡 사용자 정보가져오기 에러 \(error.localizedDescription)")
+      } else {
+        Logger.debug("DEBUG: 카카오톡 사용자 정보가져오기 success.")
+        guard
+          let email = kakaoUser?.kakaoAccount?.email,
+          let password = kakaoUser?.id
+        else { return }
+
+        Task {
+          do {
+            try await signUpEmail(.init(email: email, password: "\(password)"))
+          } catch {
+            throw CompositeErrorRepository.other(error)
+          }
+        }
+      }
+    }
+  }
+
+  private func openKakaoService() async throws -> Bool {
+    do {
+      if UserApi.isKakaoTalkLoginAvailable() {
+        return try await handleLoginWithApp()
+      } else {
+        return try await handleLoginWithWeb()
+      }
+    } catch {
+      throw CompositeErrorRepository.other(error)
+    }
+  }
+
 }
