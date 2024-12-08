@@ -54,6 +54,19 @@ extension UpdateAuthSideEffect {
     }
   }
 
+  var deleteKakaoUesr: () -> Effect<UpdateAuthReducer.Action> {
+    {
+      .run { send in
+        do {
+          let response = try await useCaseGroup.authUseCase.deleteKakaoUser()
+          await send(UpdateAuthReducer.Action.fetchDeleteKakaoUser(.success(response)))
+        } catch {
+          await send(UpdateAuthReducer.Action.fetchDeleteKakaoUser(.failure(.other(error))))
+        }
+      }
+    }
+  }
+
   var updateUserName: (String) -> Effect<UpdateAuthReducer.Action> {
     { newName in
       .run { send in

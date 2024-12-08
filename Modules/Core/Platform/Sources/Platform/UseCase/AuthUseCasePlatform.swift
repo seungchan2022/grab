@@ -92,6 +92,48 @@ extension AuthUseCasePlatform: AuthUseCase {
     }
   }
 
+  public var deleteKakaoUser: () async throws -> Bool {
+    {
+      try await withCheckedThrowingContinuation { continuation in
+        UserApi.shared.me { kakaoUser, error in
+          if let error {
+            continuation.resume(throwing: error)
+            return
+          }
+
+          guard
+            let email = kakaoUser?.kakaoAccount?.email,
+            let password = kakaoUser?.id
+          else {
+            continuation.resume(throwing: CompositeErrorRepository.incorrectUser)
+            return
+          }
+
+          guard let me = Auth.auth().currentUser else {
+            continuation.resume(throwing: CompositeErrorRepository.incorrectUser)
+            return
+          }
+
+          let credential = EmailAuthProvider.credential(withEmail: email, password: "\(password)")
+          let userRef = Firestore.firestore().collection("users")
+
+          Task {
+            do {
+              try await unlink()
+              try await me.reauthenticate(with: credential)
+              try await me.delete()
+              try await userRef.document(me.uid).delete()
+
+              continuation.resume(returning: true)
+            } catch {
+              continuation.resume(throwing: error)
+            }
+          }
+        }
+      }
+    }
+  }
+
   public var updatePassword: (String, String) async throws -> Void {
     { currPassword, newPassword in
 
@@ -231,8 +273,15 @@ extension AuthUseCasePlatform {
 
   private func uploadUserData(id: String, email: String, userName: String) async throws {
     let user = AuthEntity.Me.Response(uid: id, userName: userName, email: email, photoURL: .none)
-    guard let encodedUser = try? Firestore.Encoder().encode(user) else { return }
-    try await Firestore.firestore().collection("users").document(id).setData(encodedUser)
+    guard let encodedUser = try? Firestore.Encoder().encode(user) else {
+      throw CompositeErrorRepository.invalidTypeCasting
+    }
+
+    do {
+      try await Firestore.firestore().collection("users").document(id).setData(encodedUser)
+    } catch {
+      throw CompositeErrorRepository.other(error)
+    }
   }
 
   private func uploadKakaoInfoToFirebase() async {
@@ -247,11 +296,7 @@ extension AuthUseCasePlatform {
         else { return }
 
         Task {
-          do {
-            try await signUpEmail(.init(email: email, password: "\(password)"))
-          } catch {
-            throw CompositeErrorRepository.other(error)
-          }
+          try await signUpEmail(.init(email: email, password: "\(password)"))
         }
       }
     }
@@ -266,6 +311,14 @@ extension AuthUseCasePlatform {
       }
     } catch {
       throw CompositeErrorRepository.other(error)
+    }
+  }
+
+  private func unlink() async throws {
+    UserApi.shared.unlink { error in
+      guard let error else { return Logger.debug("unlink() success.") }
+
+      return Logger.error("\(error)")
     }
   }
 

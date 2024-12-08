@@ -22,6 +22,12 @@ extension UpdateAuthPage.ItemComponent {
     else { return viewState.user.email?.components(separatedBy: "@").first ?? "" }
     return userName.isEmpty ? viewState.user.email?.components(separatedBy: "@").first ?? "" : userName
   }
+
+  private var isShowUpdatePassword: Bool {
+    let emailDomainList = ["@kakao.com", "@gmail.com"]
+    guard let email = viewState.user.email else { return false }
+    return !emailDomainList.contains { email.hasSuffix($0) }
+  }
 }
 
 // MARK: - UpdateAuthPage.ItemComponent + View
@@ -58,21 +64,23 @@ extension UpdateAuthPage.ItemComponent: View {
 
       Divider()
 
-      HStack {
-        VStack(alignment: .leading, spacing: 16) {
-          Text("비밀번호")
-          Text("************")
-        }
+      if isShowUpdatePassword {
+        HStack {
+          VStack(alignment: .leading, spacing: 16) {
+            Text("비밀번호")
+            Text("************")
+          }
 
-        Spacer()
+          Spacer()
 
-        Button(action: { passwordTapAction() }) {
-          Text("변경")
+          Button(action: { passwordTapAction() }) {
+            Text("변경")
+          }
         }
+        .padding(.horizontal, 16)
+
+        Divider()
       }
-      .padding(.horizontal, 16)
-
-      Divider()
 
       Button(action: { deleteTapAction() }) {
         Text("계정 탈퇴")

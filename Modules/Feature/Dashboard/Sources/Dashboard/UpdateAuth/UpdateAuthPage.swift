@@ -9,7 +9,15 @@ struct UpdateAuthPage {
   @Bindable var store: StoreOf<UpdateAuthReducer>
 }
 
-extension UpdateAuthPage { }
+extension UpdateAuthPage {
+  @MainActor
+  private var isLoading: Bool {
+    store.fetchUser.isLoading
+      || store.fetchSignOut.isLoading
+      || store.fetchUpdateUserName.isLoading
+      || store.fetchDeleteUser.isLoading
+  }
+}
 
 // MARK: View
 
@@ -40,8 +48,26 @@ extension UpdateAuthPage: View {
               store.passwordText = ""
               store.isShowDeleteUserAlert = true
             })
+
+          Button(action: { store.isShowDeleteKakaoUserAlert = true }) {
+            Text("카카오 계정 탈퇴")
+          }
         }
       }
+    }
+    .alert(
+      "계정 탈퇴를 하시겠습니까?",
+      isPresented: $store.isShowDeleteKakaoUserAlert)
+    {
+      Button(action: { store.send(.onTapDeleteKakaoUser) }) {
+        Text("확인")
+      }
+
+      Button(role: .cancel, action: { store.isShowDeleteKakaoUserAlert = false }) {
+        Text("취소")
+      }
+    } message: {
+      Text("계정 탈퇴를 하려면 확인 버튼을 눌러주세요.")
     }
     .alert(
       "이름을 변경하시겠습니까?",
@@ -99,6 +125,7 @@ extension UpdateAuthPage: View {
     }
     .toolbar(.hidden, for: .navigationBar)
     .ignoresSafeArea(.all, edges: .bottom)
+    .setRequestFlightView(isLoading: isLoading)
     .onAppear {
       store.send(.getUser)
     }
