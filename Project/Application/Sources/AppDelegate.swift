@@ -3,6 +3,7 @@ import Foundation
 import KakaoSDKCommon
 import LinkNavigator
 import UIKit
+import GoogleSignIn
 
 @main
 final class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -17,6 +18,14 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
     FirebaseApp.configure()
     KakaoSDK.initSDK(appKey: kakaoAppKey as! String)
     return true
+  }
+
+  func application(
+    _ app: UIApplication,
+    open url: URL,
+    options: [UIApplication.OpenURLOptionsKey: Any] = [:]) -> Bool
+  {
+    return GIDSignIn.sharedInstance.handle(url)
   }
 
   func application(

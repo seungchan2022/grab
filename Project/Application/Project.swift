@@ -69,6 +69,12 @@ extension [String: Plist.Value] {
             .string("kakao${KAKAO_NATIVE_APP_KEY}"),
           ]),
         ]),
+        .dictionary([
+          "CFBundleTypeRole": .string("Editor"),
+          "CFBundleURLSchemes": .array([
+            .string("com.googleusercontent.apps.299220976270-e6nl3ouhhb6jogi24ifvpovml0jcfdah")
+          ]),
+        ])
       ]),
       "KAKAO_NATIVE_APP_KEY": .string("${KAKAO_NATIVE_APP_KEY}"),
     ]
