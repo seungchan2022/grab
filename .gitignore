@@ -93,5 +93,5 @@ SourcePackages
 
 ### Private ENV
 ENV.json
-GoogleService-Info.plist
+**/GoogleService-Info.plist 
 *.xcconfig
